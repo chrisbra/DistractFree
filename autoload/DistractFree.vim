@@ -28,7 +28,7 @@ fu! <sid>Init() " {{{2
 
     " The colorscheme to load
     if !exists( "g:distractfree_colorscheme" )
-        let g:distractfree_colorscheme = "Darkroom"
+        let g:distractfree_colorscheme = "darkroom"
     endif
 
     " The "scrolloff" value: how many lines should be kept visible above and below
@@ -67,9 +67,10 @@ fu! <sid>LoadFile(cmd) " {{{2
 	if empty(a:cmd)
 		return
 	endif
-	let cmd = 'verbose sil! ru ' . a:cmd
-	redir => a | exe cmd | redir END
-	if a =~# "not found"
+	let v:statusmsg = ""
+	exe 'verbose sil ru ' . a:cmd
+	if !empty(v:statusmsg)
+		" file not found
 		return 0
 	else
 		return 1
@@ -79,7 +80,7 @@ endfu
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
         let s:colors = g:colors_name
-        let [ s:_tmr, s:_so, s:_ls, s:_tw, s:_nu, s:_lbr, s:_wrap, s:_stl, s:_gstl, s:_cul, s:_cuc, s:_go, s:_fcs, s:_ru ] =
+        let s:_a = 
             \ [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ]
         if exists("+rnu")
             let s:_rnu = &l:rnu
@@ -93,7 +94,7 @@ fu! <sid>SaveRestore(save) " {{{2
             call <sid>ResetHi(hi)
         endfor
 		" Try to load the specified colorscheme
-		if exists("g:distractfree_colorscheme")
+		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
 			if !(<sid>LoadFile(colors))
 				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!")
@@ -102,8 +103,7 @@ fu! <sid>SaveRestore(save) " {{{2
     else
 		unlet! g:colors_name
         exe "colors" s:colors
-        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] =
-            \ [ s:_tmr, s:_so, s:_ls, s:_tw, s:_nu, s:_lbr, s:_wrap, s:_stl, s:_gstl, s:_cul, s:_cuc, s:_go, s:_fcs, s:_ru]
+        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
         if exists("+rnu")
             let &l:rnu = s:_rnu
         endif
@@ -214,6 +214,9 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>SaveRestore(0)
         " Reset mappings
         call <sid>MapKeys(0)
+        if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
+            exe g:distractfree_hook['stop']
+        endif
     else
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
