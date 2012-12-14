@@ -3,7 +3,7 @@ UseVimball
 finish
 plugin/DistractFreePlugin.vim	[[[1
 40
-" DistractFree - Plugin for creating WriteRoom like state in Vim
+" DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
 " Version:      0.1
 " Maintainer:   Christian Brabandt <cb@256bit.org>
@@ -44,7 +44,7 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-126
+155
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
@@ -64,6 +64,7 @@ Contents                                                        *DistractFree*
                 2.1 Window size..........................|DistractFree-size|
                 2.2 Set Colorscheme......................|DistractFree-Colorscheme|
                 2.3 Remap keys...........................|DistractFree-maps|
+                2.4 Hooks................................|DistractFree-hooks|
         3.  DistractFree Feedback........................|DistractFree-feedback|
         4.  DistractFree History.........................|DistractFree-history|
 
@@ -104,17 +105,22 @@ to 95% of the Vim window, put into your |.vimrc| the following: >
 2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
 -------------------------------
 
-By default, DistractFree does not reset your Colorscheme. It does however
-reset some highlighting colors, specifically it resets |hl-VertSplit| and
-|hl-NonText|. You might however want to load a specific colorscheme so that
-the highlighting distracts you even more. Therefore you can set the variable
-g:distractfree_colorscheme to your prefered colorscheme, which will then be
-loaded when starting distraction free mode like this >
+By default, DistractFree does not change your colorscheme, although it comes
+with an experimental Darkroom like colorscheme, called "darkroom".
 
-        :let g:distractfree_colorscheme = "Darkroom"
+DistractFree also does reset some highlighting colors, specifically it resets
+|hl-VertSplit| and |hl-NonText|. You might however want to load a specific
+colorscheme so that the highlighting distracts you even more. Therefore you
+can set the variable g:distractfree_colorscheme to your prefered colorscheme,
+which will then be loaded when starting distraction free mode like this >
 
-This would make DistractFree try to load the specified colorscheme Darkroom
-when entering distraction free mode.
+        :let g:distractfree_colorscheme = "solarized"
+
+This would make DistractFree try to load the specified colorscheme solarized
+when entering distraction free mode. If you don't want to change your
+colorscheme, simply set this variable to empty: >
+
+        :let g:distractfree_colorscheme = ""
 
 2.3 Remap keys                                *DistractFree-maps*
 --------------
@@ -138,6 +144,29 @@ g:distractfree_nomap_keys like this: >
 
     :let g:distractfree_nomap_keys = 1
 <
+
+2.4 Hooks                                             *DistractFree-hooks*
+----------
+
+If you want, you can execute certain scripts, whenever Distraction free mode
+is started and stopped. For example, on Windows you might want to start
+Distraction free mode in transparent mode using VimTweak
+(http://www.vim.org/scripts/script.php?script_id=687). So to setup everything
+on start, you set the variable g:distractfree_hook variable like this: >
+
+    let g:distractfree_hook = []
+    let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
+        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
+
+    let g:distractfree_hook["stop"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
+
+This setups a start hook, that will be executed on Distraction Free Mode start
+(using the "start" key) and stop mode (using the "stop" key).
 
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
@@ -172,8 +201,23 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-238
-" DistractFree: a DarkRoom/WriteRoom like plugin
+256
+" DistractFree.vim - A DarkRoom/WriteRoom like plugin
+" -------------------------------------------------------------
+" Version:	   0.1
+" Maintainer:  Christian Brabandt <cb@256bit.org>
+" Last Change: Mon, 14 Dec 2012 19:34:23 +0200
+"
+" Script: http://www.vim.org/scripts/script.php?script_id=XXXX
+" Copyright:   (c) 2009, 2010 by Christian Brabandt
+"			   The VIM LICENSE applies to DistractFree.vim 
+"			   (see |copyright|) except use "DistractFree.vim" 
+"			   instead of "Vim".
+"			   No warranty, express or implied.
+"	 *** ***   Use At-Your-Own-Risk!   *** ***
+" GetLatestVimScripts: XXX 1 :AutoInstall: DistractFree.vim
+"
+" Functions:
 " (autoloaded) file
 
 " Functions: "{{{1
@@ -203,7 +247,7 @@ fu! <sid>Init() " {{{2
 
     " The colorscheme to load
     if !exists( "g:distractfree_colorscheme" )
-        let g:distractfree_colorscheme = "Darkroom"
+        let g:distractfree_colorscheme = ""
     endif
 
     " The "scrolloff" value: how many lines should be kept visible above and below
@@ -242,9 +286,10 @@ fu! <sid>LoadFile(cmd) " {{{2
 	if empty(a:cmd)
 		return
 	endif
-	let cmd = 'verbose sil! ru ' . a:cmd
-	redir => a | exe cmd | redir END
-	if a =~# "not found"
+	let v:statusmsg = ""
+	exe 'verbose sil ru ' . a:cmd
+	if !empty(v:statusmsg)
+		" file not found
 		return 0
 	else
 		return 1
@@ -254,7 +299,7 @@ endfu
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
         let s:colors = g:colors_name
-        let [ s:_tmr, s:_so, s:_ls, s:_tw, s:_nu, s:_lbr, s:_wrap, s:_stl, s:_gstl, s:_cul, s:_cuc, s:_go, s:_fcs, s:_ru ] =
+        let s:_a = 
             \ [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ]
         if exists("+rnu")
             let s:_rnu = &l:rnu
@@ -263,22 +308,21 @@ fu! <sid>SaveRestore(save) " {{{2
         " Set statusline highlighting to normal hi group (so not displayed at all
         let &l:stl='%#Normal#'
         let &g:stl='%#Normal#'
-        " Set highlighting
-        for hi in ['VertSplit', 'NonText']
-            call <sid>ResetHi(hi)
-        endfor
 		" Try to load the specified colorscheme
-		if exists("g:distractfree_colorscheme")
+		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
 			if !(<sid>LoadFile(colors))
 				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!")
 			endif
 		endif
+        " Set highlighting
+        for hi in ['VertSplit', 'NonText']
+            call <sid>ResetHi(hi)
+        endfor
     else
 		unlet! g:colors_name
         exe "colors" s:colors
-        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] =
-            \ [ s:_tmr, s:_so, s:_ls, s:_tw, s:_nu, s:_lbr, s:_wrap, s:_stl, s:_gstl, s:_cul, s:_cuc, s:_go, s:_fcs, s:_ru]
+        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
         if exists("+rnu")
             let &l:rnu = s:_rnu
         endif
@@ -389,6 +433,9 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>SaveRestore(0)
         " Reset mappings
         call <sid>MapKeys(0)
+        if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
+            exe g:distractfree_hook['stop']
+        endif
     else
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
@@ -411,3 +458,43 @@ fu! DistractFree#DistractFreeToggle() "{{{2
     let s:distractfree_active = !s:distractfree_active
 endfunction
 " vim: ts=4 sts=4 fdm=marker com+=l\:\"
+colors/darkroom.vim	[[[1
+38
+" Vim WriteRoom/DarkRoom/OmniWrite like colorscheme
+" Maintainer:   Christian Brabandt <cb@256bit.org>
+" Last Change:  2012
+
+set background=dark
+hi clear
+if exists("syntax_on")
+    syntax reset
+endif
+let g:colors_name="distractfree"
+
+hi Statement    ctermfg=DarkCyan    ctermbg=Black	guifg=DarkCyan      guibg=Black
+hi Constant     ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
+hi Identifier   ctermfg=Green	    ctermbg=Black     	guifg=Green	    guibg=Black
+hi Type         ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
+hi String       ctermfg=Cyan	    ctermbg=Black     	guifg=Cyan	    guibg=Black
+hi Boolean      ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
+hi Number       ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
+hi Special      ctermfg=DarkGreen   ctermbg=Black     	guifg=darkGreen     guibg=Black
+hi Scrollbar    ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan      guibg=Black
+hi Cursor       ctermfg=Black	    ctermbg=Green     	guifg=Black	    guibg=Green
+hi WarningMsg   ctermfg=Yellow	    ctermbg=Black	guifg=Yellow	    guibg=Black
+hi Directory    ctermfg=Green	    ctermbg=DarkBlue	guifg=Green	    guibg=DarkBlue
+hi Title        ctermfg=White	    ctermbg=DarkBlue	guifg=White	    guibg=DarkBlue 
+hi Cursorline   ctermfg=Black	    ctermbg=DarkGreen	guibg=darkGreen	    guifg=black
+hi Normal       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
+hi Comment      ctermfg=darkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=darkGreen	guibg=Black	gui=bold
+hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    term=none	    guifg=DarkCyan	guibg=Black	gui=underline
+hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=DarkGreen	guibg=Black	gui=bold
+hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	cterm=bold	    term=bold	    guifg=Red		guibg=Black	gui=bold
+hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    term=none	    guifg=White		guibg=DarkGray	gui=underline
+hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black	    term=bold		gui=bold	cterm=bold
+
+" Reset by distract free
+" hi NonText      ctermfg=Black  ctermbg=Black guifg=black  guibg=Black
+" hi VertSplit    ctermfg=Black     ctermbg=Black guifg=black     guibg=Black
+" hi StatusLine   cterm=bold,underline ctermfg=White ctermbg=Black term=bold gui=bold,underline guifg=White guibg=Black
+" hi StatusLineNC cterm=bold,underline ctermfg=Gray  ctermbg=Black term=bold gui=bold,underline guifg=Gray  guibg=Black 
