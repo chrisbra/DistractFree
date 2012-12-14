@@ -44,7 +44,7 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-155
+159
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
@@ -85,6 +85,10 @@ This plugin defines the following commands:
 :DistractFreeToggle
 
 This commnd toggles between normal Vim mode and the distraction free mode.
+
+Alternatively, you can use the key <leader>W in normal mode to toggle between normal
+mode and Distraction Free mode. (If you haven't setup your leaderkey, see also
+|<Leader>| use the '\' key)
 
 ==================================================================================
 2 DistractFree Configuration                                   *DistractFree-config*
