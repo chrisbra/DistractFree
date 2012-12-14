@@ -58,8 +58,8 @@ to 95% of the Vim window, put into your |.vimrc| the following: >
 2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
 -------------------------------
 
-By default, DistractFree comes with a Darkroom like colorscheme, called
-darkroom, which will be loaded when starting distraction free mode.
+By default, DistractFree does not change your colorscheme, although it comes
+with an experimental Darkroom like colorscheme, called "darkroom".
 
 DistractFree also does reset some highlighting colors, specifically it resets
 |hl-VertSplit| and |hl-NonText|. You might however want to load a specific
