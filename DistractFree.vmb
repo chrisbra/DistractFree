@@ -5,9 +5,9 @@ plugin/DistractFreePlugin.vim	[[[1
 40
 " DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
-" Version:      0.1
+" Version:      0.2
 " Maintainer:   Christian Brabandt <cb@256bit.org>
-" Last Change:  Sun, 03 Jun 2012 13:47:04 +0200
+" Last Change: Fri, 14 Dec 2012 21:50:35 +0100
 " Script:       http://www.vim.org/scripts/script.php?script_id=
 " Copyright:    (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 "
@@ -16,7 +16,7 @@ plugin/DistractFreePlugin.vim	[[[1
 "       instead of "Vim".
 "       No warranty, express or implied.
 "       *** *** Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: ???? 1 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: ???? 2 :AutoInstall: DistractFree.vim
 
 " Init: "{{{1
 let s:cpo= &cpo
@@ -48,7 +48,7 @@ doc/DistractFree.txt	[[[1
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
-Version:    0.1 Wed, 25 Jul 2012 22:37:23 +0200
+Version:    0.2 Fri, 14 Dec 2012 21:50:35 +0100
 Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
@@ -208,9 +208,9 @@ autoload/DistractFree.vim	[[[1
 256
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
-" Version:	   0.1
+" Version:	   0.2
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Mon, 14 Dec 2012 19:34:23 +0200
+" Last Change: Fri, 14 Dec 2012 21:50:35 +0100
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=XXXX
 " Copyright:   (c) 2009, 2010 by Christian Brabandt
@@ -219,7 +219,7 @@ autoload/DistractFree.vim	[[[1
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: XXX 1 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: XXX 2 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file
