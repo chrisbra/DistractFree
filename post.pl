@@ -17,7 +17,7 @@ sub GetPassword() {
 	return @pass;
 }
 
-my $sid=;
+my $sid=4357;
 my $file;
 my @files=glob('*.vmb');
 #my $scriptversion=shift @ARGV;

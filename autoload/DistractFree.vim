@@ -11,7 +11,7 @@
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: XXX 2 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 2 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file

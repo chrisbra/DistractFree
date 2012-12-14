@@ -130,7 +130,7 @@ This setups a start hook, that will be executed on Distraction Free Mode start
 ==============================================================================
 
 Feedback is always welcome. If you like the plugin, please rate it at the
-vim-page: http://www.vim.org/scripts/script.php?script_id=XXXX
+vim-page: http://www.vim.org/scripts/script.php?script_id=4357
 
 You can also follow the development of the plugin at github:
 http://github.com/chrisbra/DistractFree
