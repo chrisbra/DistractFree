@@ -5,9 +5,9 @@ plugin/DistractFreePlugin.vim	[[[1
 40
 " DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
-" Version:      0.2
+" Version:      0.3
 " Maintainer:   Christian Brabandt <cb@256bit.org>
-" Last Change: Fri, 14 Dec 2012 21:50:35 +0100
+" Last Change: Fri, 14 Dec 2012 22:31:57 +0100
 " Script:       http://www.vim.org/scripts/script.php?script_id=
 " Copyright:    (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 "
@@ -16,7 +16,7 @@ plugin/DistractFreePlugin.vim	[[[1
 "       instead of "Vim".
 "       No warranty, express or implied.
 "       *** *** Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: ???? 2 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 3 :AutoInstall: DistractFree.vim
 
 " Init: "{{{1
 let s:cpo= &cpo
@@ -48,7 +48,7 @@ doc/DistractFree.txt	[[[1
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
-Version:    0.2 Fri, 14 Dec 2012 21:50:35 +0100
+Version:    0.3 Fri, 14 Dec 2012 22:31:57 +0100
 Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
@@ -177,7 +177,7 @@ This setups a start hook, that will be executed on Distraction Free Mode start
 ==============================================================================
 
 Feedback is always welcome. If you like the plugin, please rate it at the
-vim-page: http://www.vim.org/scripts/script.php?script_id=XXXX
+vim-page: http://www.vim.org/scripts/script.php?script_id=4357
 
 You can also follow the development of the plugin at github:
 http://github.com/chrisbra/DistractFree
@@ -208,9 +208,9 @@ autoload/DistractFree.vim	[[[1
 256
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
-" Version:	   0.2
+" Version:	   0.3
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Fri, 14 Dec 2012 21:50:35 +0100
+" Last Change: Fri, 14 Dec 2012 22:31:57 +0100
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=XXXX
 " Copyright:   (c) 2009, 2010 by Christian Brabandt
@@ -219,7 +219,7 @@ autoload/DistractFree.vim	[[[1
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: XXX 2 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 3 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file
