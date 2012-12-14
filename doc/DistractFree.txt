@@ -1,0 +1,126 @@
+*DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
+
+Author:     Christian Brabandt <cb@256bit.org>
+Version:    0.1 Wed, 25 Jul 2012 22:37:23 +0200
+Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
+            The VIM LICENSE applies to DistractFree.txt
+            (see |copyright|) except use DistractFree instead of "Vim".
+            NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
+
+
+==============================================================================
+Contents                                                        *DistractFree*
+==============================================================================
+
+        1.  DistractFree Manual..........................|DistractFree-manual|
+        2.  Configuration................................|DistractFree-config|
+                2.1 Window size..........................|DistractFree-size|
+                2.2 Set Colorscheme......................|DistractFree-Colorscheme|
+                2.3 Remap keys...........................|DistractFree-maps|
+        3.  DistractFree Feedback........................|DistractFree-feedback|
+        4.  DistractFree History.........................|DistractFree-history|
+
+=================================================================================
+1. DistractFree Manual                                       *DistractFree-manual*
+=================================================================================
+
+Functionality
+
+This plugin has been made to enable a WriteRoom like behaviour in Vim.
+
+When enabled, all unnecessary features are turned off, so you can concentrate
+on writing with Vim. It also creates on each side a couple of empty windows,
+so that the text will be centered around the screen.
+
+This plugin defines the following commands:
+
+:DistractFreeToggle
+
+This commnd toggles between normal Vim mode and the distraction free mode.
+
+==================================================================================
+2 DistractFree Configuration                                   *DistractFree-config*
+==================================================================================
+
+2.1 Window width/height                                      *DistractFree-size*
+-----------------------
+
+By default, DistractFree create a frame around the main window, such that the
+main buffer contains 90% of the available Vim window screen size. You can
+change this, by specifying either a percentage or width (in columns) by
+setting the g:distractfree_width variable, e.g. to have the window be resized
+to 95% of the Vim window, put into your |.vimrc| the following: >
+
+    :let g:distractfree_width = '95%'
+<
+
+2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
+-------------------------------
+
+By default, DistractFree does not reset your Colorscheme. It does however
+reset some highlighting colors, specifically it resets |hl-VertSplit| and
+|hl-NonText|. You might however want to load a specific colorscheme so that
+the highlighting distracts you even more. Therefore you can set the variable
+g:distractfree_colorscheme to your prefered colorscheme, which will then be
+loaded when starting distraction free mode like this >
+
+        :let g:distractfree_colorscheme = "Darkroom"
+
+This would make DistractFree try to load the specified colorscheme Darkroom
+when entering distraction free mode.
+
+2.3 Remap keys                                *DistractFree-maps*
+--------------
+
+DistractFree remaps some keys, to make scrolling more easier. By default the
+following keys are mapped: >
+                            
+    ┌───────┬─────────────────┐
+    │  Key  │        Mapped To│
+    ├───────┼─────────────────┤
+    │   <Up>│            g<Up>│
+    │ <Down>│          g<Down>│
+    │      k│               gk│
+    │      j│               gj│
+    │ <Down>│   <C-\><C-O><Up>│
+    │ <Down>│ <C-\><C-O><Down>│
+    └───────┴─────────────────┘
+
+If you prefer to have no keys being remaped, that the variable
+g:distractfree_nomap_keys like this: >
+
+    :let g:distractfree_nomap_keys = 1
+<
+
+==============================================================================
+3. DistractFree Feedback                                 *DistractFree-feedback*
+==============================================================================
+
+Feedback is always welcome. If you like the plugin, please rate it at the
+vim-page: http://www.vim.org/scripts/script.php?script_id=XXXX
+
+You can also follow the development of the plugin at github:
+http://github.com/chrisbra/DistractFree
+
+Bugs can also be reported there:
+https://github.com/chrisbra/DistractFree/issues
+
+Alternatively, you can also report any bugs to the maintainer, mentioned in the
+third line of this document. Please don't hesitate to contact me, I won't bite
+;)
+
+If you like the plugin, write me an email (look in the third line for my mail
+address). And if you are really happy, vote for the plugin and consider
+looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
+
+==============================================================================
+4. DistractFree History                                   *DistractFree-history*
+==============================================================================
+
+0.1: Dec 14, 2012 {{{1
+- first internal version
+  }}}
+
+==============================================================================
+Modeline:
+vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
