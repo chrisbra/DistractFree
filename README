@@ -17,6 +17,7 @@ Contents                                                        *DistractFree*
                 2.1 Window size..........................|DistractFree-size|
                 2.2 Set Colorscheme......................|DistractFree-Colorscheme|
                 2.3 Remap keys...........................|DistractFree-maps|
+                2.4 Hooks................................|DistractFree-hooks|
         3.  DistractFree Feedback........................|DistractFree-feedback|
         4.  DistractFree History.........................|DistractFree-history|
 
@@ -57,17 +58,22 @@ to 95% of the Vim window, put into your |.vimrc| the following: >
 2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
 -------------------------------
 
-By default, DistractFree does not reset your Colorscheme. It does however
-reset some highlighting colors, specifically it resets |hl-VertSplit| and
-|hl-NonText|. You might however want to load a specific colorscheme so that
-the highlighting distracts you even more. Therefore you can set the variable
-g:distractfree_colorscheme to your prefered colorscheme, which will then be
-loaded when starting distraction free mode like this >
+By default, DistractFree does not change your colorscheme, although it comes
+with an experimental Darkroom like colorscheme, called "darkroom".
 
-        :let g:distractfree_colorscheme = "Darkroom"
+DistractFree also does reset some highlighting colors, specifically it resets
+|hl-VertSplit| and |hl-NonText|. You might however want to load a specific
+colorscheme so that the highlighting distracts you even more. Therefore you
+can set the variable g:distractfree_colorscheme to your prefered colorscheme,
+which will then be loaded when starting distraction free mode like this >
 
-This would make DistractFree try to load the specified colorscheme Darkroom
-when entering distraction free mode.
+        :let g:distractfree_colorscheme = "solarized"
+
+This would make DistractFree try to load the specified colorscheme solarized
+when entering distraction free mode. If you don't want to change your
+colorscheme, simply set this variable to empty: >
+
+        :let g:distractfree_colorscheme = ""
 
 2.3 Remap keys                                *DistractFree-maps*
 --------------
@@ -91,6 +97,29 @@ g:distractfree_nomap_keys like this: >
 
     :let g:distractfree_nomap_keys = 1
 <
+
+2.4 Hooks                                             *DistractFree-hooks*
+----------
+
+If you want, you can execute certain scripts, whenever Distraction free mode
+is started and stopped. For example, on Windows you might want to start
+Distraction free mode in transparent mode using VimTweak
+(http://www.vim.org/scripts/script.php?script_id=687). So to setup everything
+on start, you set the variable g:distractfree_hook variable like this: >
+
+    let g:distractfree_hook = []
+    let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
+        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
+
+    let g:distractfree_hook["stop"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
+        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
+
+This setups a start hook, that will be executed on Distraction Free Mode start
+(using the "start" key) and stop mode (using the "stop" key).
 
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
