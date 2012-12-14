@@ -1,4 +1,19 @@
-" DistractFree: a DarkRoom/WriteRoom like plugin
+" DistractFree.vim - A DarkRoom/WriteRoom like plugin
+" -------------------------------------------------------------
+" Version:	   0.1
+" Maintainer:  Christian Brabandt <cb@256bit.org>
+" Last Change: Mon, 14 Dec 2012 19:34:23 +0200
+"
+" Script: http://www.vim.org/scripts/script.php?script_id=XXXX
+" Copyright:   (c) 2009, 2010 by Christian Brabandt
+"			   The VIM LICENSE applies to DistractFree.vim 
+"			   (see |copyright|) except use "DistractFree.vim" 
+"			   instead of "Vim".
+"			   No warranty, express or implied.
+"	 *** ***   Use At-Your-Own-Risk!   *** ***
+" GetLatestVimScripts: XXX 1 :AutoInstall: DistractFree.vim
+"
+" Functions:
 " (autoloaded) file
 
 " Functions: "{{{1
@@ -28,7 +43,7 @@ fu! <sid>Init() " {{{2
 
     " The colorscheme to load
     if !exists( "g:distractfree_colorscheme" )
-        let g:distractfree_colorscheme = "darkroom"
+        let g:distractfree_colorscheme = ""
     endif
 
     " The "scrolloff" value: how many lines should be kept visible above and below
@@ -89,10 +104,6 @@ fu! <sid>SaveRestore(save) " {{{2
         " Set statusline highlighting to normal hi group (so not displayed at all
         let &l:stl='%#Normal#'
         let &g:stl='%#Normal#'
-        " Set highlighting
-        for hi in ['VertSplit', 'NonText']
-            call <sid>ResetHi(hi)
-        endfor
 		" Try to load the specified colorscheme
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
@@ -100,6 +111,10 @@ fu! <sid>SaveRestore(save) " {{{2
 				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!")
 			endif
 		endif
+        " Set highlighting
+        for hi in ['VertSplit', 'NonText']
+            call <sid>ResetHi(hi)
+        endfor
     else
 		unlet! g:colors_name
         exe "colors" s:colors

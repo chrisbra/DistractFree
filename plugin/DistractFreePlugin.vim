@@ -1,4 +1,4 @@
-" DistractFree - Plugin for creating WriteRoom like state in Vim
+" DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
 " Version:      0.1
 " Maintainer:   Christian Brabandt <cb@256bit.org>
