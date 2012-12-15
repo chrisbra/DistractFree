@@ -205,7 +205,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-256
+268
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
 " Version:	   0.3
@@ -226,13 +226,13 @@ autoload/DistractFree.vim	[[[1
 
 " Functions: "{{{1
 " Output a warning message, if 'verbose' is set
-fu! <sid>WarningMsg(text) "{{{2
+fu! <sid>WarningMsg(text, force) "{{{2
 	if empty(a:text)
 		return
 	endif
 	let text = "DistractFree: ". a:text
 	let v:errmsg = text
-	if !&verbose
+	if !&verbose && !a:force
 		return
 	endif
 	echohl WarningMsg
@@ -316,7 +316,7 @@ fu! <sid>SaveRestore(save) " {{{2
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
 			if !(<sid>LoadFile(colors))
-				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!")
+				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!",0)
 			endif
 		endif
         " Set highlighting
@@ -347,6 +347,10 @@ fu! <sid>NewWindow(cmd) "{{{2
     exe a:cmd
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight
     let s:bwipe = bufnr('%')
+	augroup DistractFreeWindow
+		au!
+		au BufEnter <buffer> noa wincmd p
+	augroup END
     wincmd p
 endfu
 
@@ -441,6 +445,14 @@ fu! DistractFree#DistractFreeToggle() "{{{2
             exe g:distractfree_hook['stop']
         endif
     else
+		try
+			sil wincmd o
+		catch
+			" wincmd o does not work, probably because of other split window
+			" which have not been saved yet
+			call <sid>WarningMsg("Can't start DistractFree mode, other windows contain non-saved changes!", 1)
+			return
+		endtry
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
