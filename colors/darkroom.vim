@@ -24,12 +24,12 @@ hi Directory    ctermfg=Green	    ctermbg=DarkBlue	guifg=Green	    guibg=DarkBlu
 hi Title        ctermfg=White	    ctermbg=DarkBlue	guifg=White	    guibg=DarkBlue 
 hi Cursorline   ctermfg=Black	    ctermbg=DarkGreen	guibg=darkGreen	    guifg=black
 hi Normal       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
-hi Comment      ctermfg=darkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=darkGreen	guibg=Black	gui=bold
-hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    term=none	    guifg=DarkCyan	guibg=Black	gui=underline
-hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=DarkGreen	guibg=Black	gui=bold
-hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	cterm=bold	    term=bold	    guifg=Red		guibg=Black	gui=bold
-hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    term=none	    guifg=White		guibg=DarkGray	gui=underline
-hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black	    term=bold		gui=bold	cterm=bold
+hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	guifg=DarkGreen	    guibg=Black
+hi Comment      ctermfg=darkGreen   ctermbg=Black     	guifg=darkGreen	    guibg=Black
+hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
+hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	guifg=Red	    guibg=Black
+hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    guifg=White		guibg=DarkGray	gui=underline
+hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    guifg=DarkCyan	guibg=Black	gui=underline
 
 " Reset by distract free
 " hi NonText      ctermfg=Black  ctermbg=Black guifg=black  guibg=Black
