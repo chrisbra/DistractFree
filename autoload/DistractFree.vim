@@ -129,6 +129,7 @@ fu! <sid>ResetHi(group) "{{{2
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
 	endif
+	let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
 	let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
 	let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
 	let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
