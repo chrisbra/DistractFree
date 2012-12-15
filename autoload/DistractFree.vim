@@ -46,6 +46,11 @@ fu! <sid>Init() " {{{2
         let g:distractfree_colorscheme = ""
     endif
 
+    " The font to use
+    if !exists( "g:distractfree_font" )
+        let g:distractfree_font = ""
+    endif
+
     " The "scrolloff" value: how many lines should be kept visible above and below
     " the cursor at all times?  Defaults to 999 (which centers your cursor in the 
     " active window).
@@ -94,7 +99,14 @@ endfu
 
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
-        let s:colors = g:colors_name
+		if exists("g:colors_name")
+			let s:colors = g:colors_name
+		endif
+		if !empty(g:distractfree_font)
+			let s:guifont = &guifont
+			sil! let &guifont=g:distractfree_font
+		endif
+
         let s:_a = 
             \ [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ]
         if exists("+rnu")
@@ -117,7 +129,12 @@ fu! <sid>SaveRestore(save) " {{{2
         endfor
     else
 		unlet! g:colors_name
-        exe "colors" s:colors
+		if exists("s:colors")
+			exe "colors" s:colors
+		endif
+		if exists("s:guifont")
+			let &guifont = s:guifont
+		endif
         let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
         if exists("+rnu")
             let &l:rnu = s:_rnu
