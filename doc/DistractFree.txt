@@ -150,6 +150,15 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
+0.4: Feb 16, 2013 {{{1
+- set/restore guifont
+- updated colorscheme
+- remove font attribute from Normal highlighting
+- make current window the only window
+0.3: Dec 15, 2012 {{{1
+- enable |:GLVS|
+0.2: Dec 14, 2012 {{{1
+- upload to vim.org
 0.1: Dec 14, 2012 {{{1
 - first internal version
   }}}

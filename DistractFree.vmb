@@ -205,7 +205,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-268
+269
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
 " Version:	   0.3
@@ -337,6 +337,7 @@ fu! <sid>ResetHi(group) "{{{2
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
 	endif
+	let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
 	let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
 	let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
 	let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
@@ -502,12 +503,12 @@ hi Directory    ctermfg=Green	    ctermbg=DarkBlue	guifg=Green	    guibg=DarkBlu
 hi Title        ctermfg=White	    ctermbg=DarkBlue	guifg=White	    guibg=DarkBlue 
 hi Cursorline   ctermfg=Black	    ctermbg=DarkGreen	guibg=darkGreen	    guifg=black
 hi Normal       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
-hi Comment      ctermfg=darkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=darkGreen	guibg=Black	gui=bold
-hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    term=none	    guifg=DarkCyan	guibg=Black	gui=underline
-hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	cterm=bold	    term=bold	    guifg=DarkGreen	guibg=Black	gui=bold
-hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	cterm=bold	    term=bold	    guifg=Red		guibg=Black	gui=bold
-hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    term=none	    guifg=White		guibg=DarkGray	gui=underline
-hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black	    term=bold		gui=bold	cterm=bold
+hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	guifg=DarkGreen	    guibg=Black
+hi Comment      ctermfg=darkGreen   ctermbg=Black     	guifg=darkGreen	    guibg=Black
+hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
+hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	guifg=Red	    guibg=Black
+hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    guifg=White		guibg=DarkGray	gui=underline
+hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    guifg=DarkCyan	guibg=Black	gui=underline
 
 " Reset by distract free
 " hi NonText      ctermfg=Black  ctermbg=Black guifg=black  guibg=Black
