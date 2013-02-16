@@ -5,9 +5,9 @@ plugin/DistractFreePlugin.vim	[[[1
 40
 " DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
-" Version:      0.3
+" Version:      0.4
 " Maintainer:   Christian Brabandt <cb@256bit.org>
-" Last Change: Fri, 14 Dec 2012 22:31:57 +0100
+" Last Change: Sat, 16 Feb 2013 23:00:41 +0100
 " Script:       http://www.vim.org/scripts/script.php?script_id=
 " Copyright:    (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 "
@@ -16,7 +16,7 @@ plugin/DistractFreePlugin.vim	[[[1
 "       instead of "Vim".
 "       No warranty, express or implied.
 "       *** *** Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 4357 3 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 4 :AutoInstall: DistractFree.vim
 
 " Init: "{{{1
 let s:cpo= &cpo
@@ -44,11 +44,11 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-159
+168
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
-Version:    0.3 Fri, 14 Dec 2012 22:31:57 +0100
+Version:    0.4 Sat, 16 Feb 2013 23:00:41 +0100
 Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
@@ -197,6 +197,15 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
+0.4: Feb 16, 2013 {{{1
+- set/restore guifont
+- updated colorscheme
+- remove font attribute from Normal highlighting
+- make current window the only window
+0.3: Dec 15, 2012 {{{1
+- enable |:GLVS|
+0.2: Dec 14, 2012 {{{1
+- upload to vim.org
 0.1: Dec 14, 2012 {{{1
 - first internal version
   }}}
@@ -205,12 +214,12 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-269
+286
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
-" Version:	   0.3
+" Version:	   0.4
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Fri, 14 Dec 2012 22:31:57 +0100
+" Last Change: Sat, 16 Feb 2013 23:00:41 +0100
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=XXXX
 " Copyright:   (c) 2009, 2010 by Christian Brabandt
@@ -219,7 +228,7 @@ autoload/DistractFree.vim	[[[1
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 4357 3 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 4 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file
@@ -252,6 +261,11 @@ fu! <sid>Init() " {{{2
     " The colorscheme to load
     if !exists( "g:distractfree_colorscheme" )
         let g:distractfree_colorscheme = ""
+    endif
+
+    " The font to use
+    if !exists( "g:distractfree_font" )
+        let g:distractfree_font = ""
     endif
 
     " The "scrolloff" value: how many lines should be kept visible above and below
@@ -302,7 +316,14 @@ endfu
 
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
-        let s:colors = g:colors_name
+		if exists("g:colors_name")
+			let s:colors = g:colors_name
+		endif
+		if !empty(g:distractfree_font)
+			let s:guifont = &guifont
+			sil! let &guifont=g:distractfree_font
+		endif
+
         let s:_a = 
             \ [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ]
         if exists("+rnu")
@@ -325,7 +346,12 @@ fu! <sid>SaveRestore(save) " {{{2
         endfor
     else
 		unlet! g:colors_name
-        exe "colors" s:colors
+		if exists("s:colors")
+			exe "colors" s:colors
+		endif
+		if exists("s:guifont")
+			let &guifont = s:guifont
+		endif
         let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
         if exists("+rnu")
             let &l:rnu = s:_rnu

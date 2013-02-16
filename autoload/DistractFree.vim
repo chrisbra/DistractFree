@@ -1,8 +1,8 @@
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
-" Version:	   0.3
+" Version:	   0.4
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Fri, 14 Dec 2012 22:31:57 +0100
+" Last Change: Sat, 16 Feb 2013 23:00:41 +0100
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=XXXX
 " Copyright:   (c) 2009, 2010 by Christian Brabandt
@@ -11,7 +11,7 @@
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 4357 3 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 4 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file
