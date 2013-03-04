@@ -111,7 +111,7 @@ Distraction free mode in transparent mode using VimTweak
 (http://www.vim.org/scripts/script.php?script_id=687). So to setup everything
 on start, you set the variable g:distractfree_hook variable like this: >
 
-    let g:distractfree_hook = []
+    let g:distractfree_hook = {}
     let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
         \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
         \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
