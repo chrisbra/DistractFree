@@ -32,10 +32,8 @@ fu! <sid>WarningMsg(text, force) "{{{2
 	echohl None
 endfu
 
+let s:distractfree_active = 0
 fu! <sid>Init() " {{{2
-    if !exists("s:distractfree_active")
-        let s:distractfree_active   = 0
-    endif
     " The desired column width.  Defaults to 90%
     if !exists( "g:distractfree_width" )
         let g:distractfree_width = '90%'
@@ -282,5 +280,8 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         endif
     endif
     let s:distractfree_active = !s:distractfree_active
+endfunction
+fu! DistractFree#Active()
+	return s:distractfree_active
 endfunction
 " vim: ts=4 sts=4 fdm=marker com+=l\:\"
