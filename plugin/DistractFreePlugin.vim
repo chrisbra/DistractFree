@@ -27,7 +27,6 @@ let g:loaded_distract_free = matchstr(getline(3), '\.\zs\d\+') + 0
 command! -nargs=0 DistractFreeToggle call DistractFree#DistractFreeToggle()
 
 " Define the Mapping: "{{{2
-" Create a mapping for the `VimroomToggle` function
 noremap <silent> <Plug>DistractFreeToggle    :DistractFreeToggle<CR>
 " If no mapping exists, map it to `<Leader>W`.
 if !hasmapto( '<Plug>DistractFreeToggle' )

@@ -150,6 +150,13 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
+0.5: (unreleased) {{{1
+- updated documentation by Ingo Karkat, Thanks!, issue #1
+- Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
+  issue #2)
+- Ensure, padding of 'stl' works correctly (patch by Ingo Karkat, Thanks!,
+  issue #3)
+
 0.4: Feb 16, 2013 {{{1
 - set/restore guifont
 - updated colorscheme

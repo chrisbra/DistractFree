@@ -4,8 +4,8 @@
 " Maintainer:  Christian Brabandt <cb@256bit.org>
 " Last Change: Sat, 16 Feb 2013 23:00:41 +0100
 "
-" Script: http://www.vim.org/scripts/script.php?script_id=XXXX
-" Copyright:   (c) 2009, 2010 by Christian Brabandt
+" Script: http://www.vim.org/scripts/script.php?script_id=4357
+" Copyright:   (c) 2009 - 2013 by Christian Brabandt
 "			   The VIM LICENSE applies to DistractFree.vim 
 "			   (see |copyright|) except use "DistractFree.vim" 
 "			   instead of "Vim".
@@ -60,10 +60,8 @@ fu! <sid>Init() " {{{2
         let s:distractfree_nomap_keys = g:distractfree_nomap_keys
     endif
 
-    " Should Vimroom clear line numbers from the Vimroomed buffer?  Defaults to `1`
-    " (on). Set to `0` if you'd prefer Vimroom to leave line numbers untouched.
-    " (Note that setting this to `0` will not turn line numbers on if they aren't
-    " on already).
+    " Should DistractFree clear line numbers from the buffer?  Defaults to `1`
+    " (on). Set to `0` if you'd prefer to leave line numbers untouched.
     if !exists( "g:distractfree_line_numbers" )
         let g:distractfree_line_numbers = 1
     endif
@@ -143,11 +141,11 @@ endfu
 fu! <sid>ResetHi(group) "{{{2
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
+		let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
+		let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
+		let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
+		let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	endif
-	let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
-	let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
-	let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
-	let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	exe "sil hi" a:group s:default_hi
 endfu
 
