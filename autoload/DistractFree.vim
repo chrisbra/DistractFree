@@ -156,6 +156,7 @@ endfu
 fu! <sid>NewWindow(cmd) "{{{2
     exe a:cmd
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight
+    let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
 	augroup DistractFreeWindow
 		au!
@@ -263,6 +264,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			call <sid>WarningMsg("Can't start DistractFree mode, other windows contain non-saved changes!", 1)
 			return
 		endtry
+        call <sid>SaveRestore(1)
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
@@ -273,7 +275,6 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>NewWindow("noa sil leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
         call <sid>NewWindow("noa sil rightbelow ". s:lines.   "split new")
-        call <sid>SaveRestore(1)
         " Setup navigation over "display lines", not "logical lines" if
         " mappings for the navigation keys don't already exist.
         call <sid>MapKeys(1)
