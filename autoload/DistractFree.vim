@@ -280,7 +280,8 @@ fu! DistractFree#DistractFreeToggle() "{{{2
     endif
     let s:distractfree_active = !s:distractfree_active
 endfunction
-fu! DistractFree#Active()
+
+fu! DistractFree#Active() "{{{2
 	return s:distractfree_active
 endfunction
 " vim: ts=4 sts=4 fdm=marker com+=l\:\"
