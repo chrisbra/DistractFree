@@ -112,12 +112,12 @@ Distraction free mode in transparent mode using VimTweak
 on start, you set the variable g:distractfree_hook variable like this: >
 
     let g:distractfree_hook = {}
-    let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
+    let g:distractfree_hook.start = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
         \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
         \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
         \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
 
-    let g:distractfree_hook["stop"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
+    let g:distractfree_hook.stop = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
         \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
         \ ':call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
         \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
