@@ -95,8 +95,10 @@ endfu
 
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
+		let s:main_buffer = bufnr('')
 		if exists("g:colors_name")
 			let s:colors = g:colors_name
+			let s:higroups = <sid>SaveHighlighting('User')
 		endif
 		if !empty(g:distractfree_font)
 			let s:guifont = &guifont
@@ -108,7 +110,7 @@ fu! <sid>SaveRestore(save) " {{{2
         if exists("+rnu")
             let s:_rnu = &l:rnu
         endif
-        exe printf("setlocal t_mr= so=%s ls=0 tw=%s nonu nornu lbr wrap stl= nocul nocuc go=", g:distractfree_scrolloff, winwidth(winnr()))
+        exe printf("setlocal t_mr= so=%s ls=0 tw=%s nonu nornu lbr nowrap stl= nocul nocuc noru go=", g:distractfree_scrolloff, winwidth(winnr()))
         " Set statusline highlighting to normal hi group (so not displayed at all
         let &l:stl='%#Normal#'
         let &g:stl='%#Normal#'
@@ -120,13 +122,17 @@ fu! <sid>SaveRestore(save) " {{{2
 			endif
 		endif
         " Set highlighting
-        for hi in ['VertSplit', 'NonText']
+        for hi in ['VertSplit', 'NonText', 'SignColumn']
             call <sid>ResetHi(hi)
         endfor
     else
+		unlet! s:main_buffer
 		unlet! g:colors_name
 		if exists("s:colors")
 			exe "colors" s:colors
+			for item in s:higroups
+				exe "sil!" item
+			endfor
 		endif
 		if exists("s:guifont")
 			let &guifont = s:guifont
@@ -151,14 +157,29 @@ endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
     exe a:cmd
-    sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight
+    sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
     let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
 	augroup DistractFreeWindow
 		au!
-		au BufEnter <buffer> let &l:stl='%#Normal#'|noa wincmd p
+		au BufEnter <buffer> call <sid>BufEnterHidden()
+		if exists("##QuitPre")
+			au QuitPre <buffer> bw
+		endif
 	augroup END
     noa wincmd p
+endfu
+
+fu! <sid>BufEnterHidden() "{{{2
+	let &l:stl = '%#Normal#'
+	if !bufexists(s:main_buffer) ||
+		\ !buflisted(s:main_buffer) ||
+		\ !bufloaded(s:main_buffer) ||
+		\ bufwinnr(s:main_buffer) == -1
+		exe s:bwipe "bw!"
+	else
+		noa wincmd p
+	endif
 endfu
 
 fu! <sid>MapKeys(enable) "{{{2
@@ -237,6 +258,24 @@ fu! <sid>MapKeys(enable) "{{{2
     endif
 endfu
 
+fu! <sid>SaveHighlighting(pattern) "{{{2
+	" Save and Restore User1-User10 highlighting
+    redir => a|exe "sil hi"|redir end
+    let b = split(a[1:], "\n")
+    call filter(b, 'v:val !~ ''\(links to\)\|cleared''')
+    let i = 0
+    while i < len(b)
+		let b[i] = substitute(b[i], 'xxx', '', '')
+		if i > 0 && b[i] =~ '^\s\+'
+			let b[i-1] .= ' '. join(split(b[i]), " ")
+			call remove(b, i)
+		else
+			let i+=1
+		endif
+    endw
+	call map(b, '''hi ''. v:val')
+    return filter(b, 'v:val=~a:pattern')
+endfu
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active == 1
@@ -248,6 +287,13 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>SaveRestore(0)
         " Reset mappings
         call <sid>MapKeys(0)
+		" Reset closing autocommand
+		if exists("#DistractFreeMain")
+			augroup DistractFreeMain
+				au!
+			augroup END
+			augroup! DistractFreeMain
+		endif
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
             exe g:distractfree_hook['stop']
         endif
@@ -274,10 +320,19 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         " Setup navigation over "display lines", not "logical lines" if
         " mappings for the navigation keys don't already exist.
         call <sid>MapKeys(1)
+
+		" Set autocommand for closing the sidebar
+		if exists("##QuitPre")
+			augroup DistractFreeMain
+				au!
+				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
+			augroup END
+		endif
+
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'start', 0) != 0
             exe g:distractfree_hook['start']
         endif
-		set noruler
+		"set noruler
 		" exe "windo | if winnr() !=".winnr(). "|let &l:stl='%#Normal#'|endif"
     endif
     let s:distractfree_active = !s:distractfree_active
