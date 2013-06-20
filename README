@@ -111,16 +111,16 @@ Distraction free mode in transparent mode using VimTweak
 (http://www.vim.org/scripts/script.php?script_id=687). So to setup everything
 on start, you set the variable g:distractfree_hook variable like this: >
 
-    let g:distractfree_hook = []
-    let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
-        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
+    let g:distractfree_hook = {}
+    let g:distractfree_hook.start = 'call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
+        \ 'call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
 
-    let g:distractfree_hook["stop"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
+    let g:distractfree_hook.stop = 'call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
 
 This setups a start hook, that will be executed on Distraction Free Mode start
 (using the "start" key) and stop mode (using the "stop" key).
@@ -149,6 +149,15 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 ==============================================================================
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
+
+0.5: (unreleased) {{{1
+- updated documentation by Ingo Karkat, Thanks!, issue #1
+- Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
+  issue #2)
+- Ensure, padding of 'stl' works correctly (patch by Ingo Karkat, Thanks!,
+  issue #3)
+- :q in DistractMode quits vim correctly
+- Save/Restore User highlighting
 
 0.4: Feb 16, 2013 {{{1
 - set/restore guifont

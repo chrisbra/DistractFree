@@ -2,7 +2,7 @@
 UseVimball
 finish
 plugin/DistractFreePlugin.vim	[[[1
-40
+39
 " DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
 " Version:      0.4
@@ -32,7 +32,6 @@ let g:loaded_distract_free = matchstr(getline(3), '\.\zs\d\+') + 0
 command! -nargs=0 DistractFreeToggle call DistractFree#DistractFreeToggle()
 
 " Define the Mapping: "{{{2
-" Create a mapping for the `VimroomToggle` function
 noremap <silent> <Plug>DistractFreeToggle    :DistractFreeToggle<CR>
 " If no mapping exists, map it to `<Leader>W`.
 if !hasmapto( '<Plug>DistractFreeToggle' )
@@ -44,7 +43,7 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-168
+177
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
@@ -158,16 +157,16 @@ Distraction free mode in transparent mode using VimTweak
 (http://www.vim.org/scripts/script.php?script_id=687). So to setup everything
 on start, you set the variable g:distractfree_hook variable like this: >
 
-    let g:distractfree_hook = []
-    let g:distractfree_hook["start"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
-        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
+    let g:distractfree_hook = {}
+    let g:distractfree_hook.start = 'call libcallnr("vimtweak.dll", "SetAlpha", 210) |'. 
+        \ 'call libcallnr("vimtweak.dll", "EnableMaximize", 1)  |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableCaption", 0)   |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableTopMost", 1) '
 
-    let g:distractfree_hook["stop"] = ':call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
-        \ ':call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
+    let g:distractfree_hook.stop = 'call libcallnr("vimtweak.dll", "SetAlpha", 255) |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableMaximize", 0)  |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableCaption", 1)   |'.
+        \ 'call libcallnr("vimtweak.dll", "EnableTopMost", 0)   |'
 
 This setups a start hook, that will be executed on Distraction Free Mode start
 (using the "start" key) and stop mode (using the "stop" key).
@@ -197,6 +196,15 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
+0.5: (unreleased) {{{1
+- updated documentation by Ingo Karkat, Thanks!, issue #1
+- Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
+  issue #2)
+- Ensure, padding of 'stl' works correctly (patch by Ingo Karkat, Thanks!,
+  issue #3)
+- :q in DistractMode quits vim correctly
+- Save/Restore User highlighting
+
 0.4: Feb 16, 2013 {{{1
 - set/restore guifont
 - updated colorscheme
@@ -214,15 +222,15 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-286
+343
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
 " Version:	   0.4
 " Maintainer:  Christian Brabandt <cb@256bit.org>
 " Last Change: Sat, 16 Feb 2013 23:00:41 +0100
 "
-" Script: http://www.vim.org/scripts/script.php?script_id=XXXX
-" Copyright:   (c) 2009, 2010 by Christian Brabandt
+" Script: http://www.vim.org/scripts/script.php?script_id=4357
+" Copyright:   (c) 2009 - 2013 by Christian Brabandt
 "			   The VIM LICENSE applies to DistractFree.vim 
 "			   (see |copyright|) except use "DistractFree.vim" 
 "			   instead of "Vim".
@@ -249,10 +257,8 @@ fu! <sid>WarningMsg(text, force) "{{{2
 	echohl None
 endfu
 
+let s:distractfree_active = 0
 fu! <sid>Init() " {{{2
-    if !exists("s:distractfree_active")
-        let s:distractfree_active   = 0
-    endif
     " The desired column width.  Defaults to 90%
     if !exists( "g:distractfree_width" )
         let g:distractfree_width = '90%'
@@ -279,10 +285,8 @@ fu! <sid>Init() " {{{2
         let s:distractfree_nomap_keys = g:distractfree_nomap_keys
     endif
 
-    " Should Vimroom clear line numbers from the Vimroomed buffer?  Defaults to `1`
-    " (on). Set to `0` if you'd prefer Vimroom to leave line numbers untouched.
-    " (Note that setting this to `0` will not turn line numbers on if they aren't
-    " on already).
+    " Should DistractFree clear line numbers from the buffer?  Defaults to `1`
+    " (on). Set to `0` if you'd prefer to leave line numbers untouched.
     if !exists( "g:distractfree_line_numbers" )
         let g:distractfree_line_numbers = 1
     endif
@@ -316,8 +320,10 @@ endfu
 
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
+		let s:main_buffer = bufnr('')
 		if exists("g:colors_name")
 			let s:colors = g:colors_name
+			let s:higroups = <sid>SaveHighlighting('User')
 		endif
 		if !empty(g:distractfree_font)
 			let s:guifont = &guifont
@@ -329,7 +335,7 @@ fu! <sid>SaveRestore(save) " {{{2
         if exists("+rnu")
             let s:_rnu = &l:rnu
         endif
-        exe printf("setlocal t_mr= so=%s ls=0 tw=%s nonu nornu lbr wrap stl= nocul nocuc go=", g:distractfree_scrolloff, winwidth(winnr()))
+        exe printf("setlocal t_mr= so=%s ls=0 tw=%s nonu nornu lbr nowrap stl= nocul nocuc noru go=", g:distractfree_scrolloff, winwidth(winnr()))
         " Set statusline highlighting to normal hi group (so not displayed at all
         let &l:stl='%#Normal#'
         let &g:stl='%#Normal#'
@@ -341,13 +347,17 @@ fu! <sid>SaveRestore(save) " {{{2
 			endif
 		endif
         " Set highlighting
-        for hi in ['VertSplit', 'NonText']
+        for hi in ['VertSplit', 'NonText', 'SignColumn']
             call <sid>ResetHi(hi)
         endfor
     else
+		unlet! s:main_buffer
 		unlet! g:colors_name
 		if exists("s:colors")
 			exe "colors" s:colors
+			for item in s:higroups
+				exe "sil!" item
+			endfor
 		endif
 		if exists("s:guifont")
 			let &guifont = s:guifont
@@ -362,23 +372,39 @@ endfu
 fu! <sid>ResetHi(group) "{{{2
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
+		let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
+		let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
+		let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
+		let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	endif
-	let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
-	let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
-	let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
-	let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	exe "sil hi" a:group s:default_hi
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
     exe a:cmd
-    sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight
+    sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
+    let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
 	augroup DistractFreeWindow
 		au!
-		au BufEnter <buffer> noa wincmd p
+		au BufEnter <buffer> call <sid>BufEnterHidden()
+		if exists("##QuitPre")
+			au QuitPre <buffer> bw
+		endif
 	augroup END
-    wincmd p
+    noa wincmd p
+endfu
+
+fu! <sid>BufEnterHidden() "{{{2
+	let &l:stl = '%#Normal#'
+	if !bufexists(s:main_buffer) ||
+		\ !buflisted(s:main_buffer) ||
+		\ !bufloaded(s:main_buffer) ||
+		\ bufwinnr(s:main_buffer) == -1
+		exe s:bwipe "bw!"
+	else
+		noa wincmd p
+	endif
 endfu
 
 fu! <sid>MapKeys(enable) "{{{2
@@ -457,6 +483,24 @@ fu! <sid>MapKeys(enable) "{{{2
     endif
 endfu
 
+fu! <sid>SaveHighlighting(pattern) "{{{2
+	" Save and Restore User1-User10 highlighting
+    redir => a|exe "sil hi"|redir end
+    let b = split(a[1:], "\n")
+    call filter(b, 'v:val !~ ''\(links to\)\|cleared''')
+    let i = 0
+    while i < len(b)
+		let b[i] = substitute(b[i], 'xxx', '', '')
+		if i > 0 && b[i] =~ '^\s\+'
+			let b[i-1] .= ' '. join(split(b[i]), " ")
+			call remove(b, i)
+		else
+			let i+=1
+		endif
+    endw
+	call map(b, '''hi ''. v:val')
+    return filter(b, 'v:val=~a:pattern')
+endfu
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active == 1
@@ -468,6 +512,13 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>SaveRestore(0)
         " Reset mappings
         call <sid>MapKeys(0)
+		" Reset closing autocommand
+		if exists("#DistractFreeMain")
+			augroup DistractFreeMain
+				au!
+			augroup END
+			augroup! DistractFreeMain
+		endif
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
             exe g:distractfree_hook['stop']
         endif
@@ -480,6 +531,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			call <sid>WarningMsg("Can't start DistractFree mode, other windows contain non-saved changes!", 1)
 			return
 		endtry
+        call <sid>SaveRestore(1)
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
@@ -490,15 +542,28 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>NewWindow("noa sil leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
         call <sid>NewWindow("noa sil rightbelow ". s:lines.   "split new")
-        call <sid>SaveRestore(1)
         " Setup navigation over "display lines", not "logical lines" if
         " mappings for the navigation keys don't already exist.
         call <sid>MapKeys(1)
+
+		" Set autocommand for closing the sidebar
+		if exists("##QuitPre")
+			augroup DistractFreeMain
+				au!
+				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
+			augroup END
+		endif
+
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'start', 0) != 0
             exe g:distractfree_hook['start']
         endif
+		" exe "windo | if winnr() !=".winnr(). "|let &l:stl='%#Normal#'|endif"
     endif
     let s:distractfree_active = !s:distractfree_active
+endfunction
+
+fu! DistractFree#Active() "{{{2
+	return s:distractfree_active
 endfunction
 " vim: ts=4 sts=4 fdm=marker com+=l\:\"
 colors/darkroom.vim	[[[1

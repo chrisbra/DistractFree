@@ -156,6 +156,8 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
   issue #2)
 - Ensure, padding of 'stl' works correctly (patch by Ingo Karkat, Thanks!,
   issue #3)
+- :q in DistractMode quits vim correctly
+- Save/Restore User highlighting
 
 0.4: Feb 16, 2013 {{{1
 - set/restore guifont

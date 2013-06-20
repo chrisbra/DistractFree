@@ -332,7 +332,6 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'start', 0) != 0
             exe g:distractfree_hook['start']
         endif
-		"set noruler
 		" exe "windo | if winnr() !=".winnr(). "|let &l:stl='%#Normal#'|endif"
     endif
     let s:distractfree_active = !s:distractfree_active
