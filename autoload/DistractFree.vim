@@ -75,6 +75,9 @@ fu! <sid>Init() " {{{2
         let s:minwidth = matchstr(g:distractfree_width, '\d\+')
         let s:minheight = s:minwidth/2
     endif
+	if !exists("s:sessionfile")
+		let s:sessionfile = tempname()
+	endif
 endfu
 
 fu! <sid>LoadFile(cmd) " {{{2
@@ -276,6 +279,21 @@ fu! <sid>SaveHighlighting(pattern) "{{{2
 	call map(b, '''hi ''. v:val')
     return filter(b, 'v:val=~a:pattern')
 endfu
+
+fu! <sid>SaveRestoreWindowSession(save) "{{{2
+	if a:save
+		let _so = &ssop
+		let &ssop = 'blank,buffers,curdir,folds,help,unix,tabpages,winsize'
+		exe ':mksession!' s:sessionfile
+		let &ssop = _so
+	else
+		if exists("s:sessionfile") && filereadable(s:sessionfile)
+			exe ":sil so" s:sessionfile
+			"call delete(s:sessionfile)
+		endif
+	endif
+endfu
+
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active == 1
@@ -294,10 +312,12 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			augroup END
 			augroup! DistractFreeMain
 		endif
+		call <sid>SaveRestoreWindowSession(0)
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
             exe g:distractfree_hook['stop']
         endif
     else
+		call <sid>SaveRestoreWindowSession(1)
 		try
 			sil wincmd o
 		catch
