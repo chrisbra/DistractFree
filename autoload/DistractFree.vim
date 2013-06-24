@@ -346,6 +346,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			augroup DistractFreeMain
 				au!
 				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
+				au VimLeave * :call delete(s:sessionfile)
 			augroup END
 		endif
 
