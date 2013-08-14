@@ -1,7 +1,7 @@
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
-Version:    0.4 Sat, 16 Feb 2013 23:00:41 +0100
+Version:    0.5 Wed, 14 Aug 2013 22:36:39 +0200
 Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
@@ -150,7 +150,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
-0.5: (unreleased) {{{1
+0.5: Aug 14, 2013 {{{1
 - updated documentation by Ingo Karkat, Thanks!, issue #1
 - Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
   issue #2)

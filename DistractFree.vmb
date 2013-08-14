@@ -5,9 +5,9 @@ plugin/DistractFreePlugin.vim	[[[1
 39
 " DistractFreePlugin - Plugin for creating WriteRoom like state in Vim
 " -------------------------------------------------------------
-" Version:      0.4
+" Version:      0.5
 " Maintainer:   Christian Brabandt <cb@256bit.org>
-" Last Change: Sat, 16 Feb 2013 23:00:41 +0100
+" Last Change: Wed, 14 Aug 2013 22:36:39 +0200
 " Script:       http://www.vim.org/scripts/script.php?script_id=
 " Copyright:    (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 "
@@ -16,7 +16,7 @@ plugin/DistractFreePlugin.vim	[[[1
 "       instead of "Vim".
 "       No warranty, express or implied.
 "       *** *** Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 4357 4 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 5 :AutoInstall: DistractFree.vim
 
 " Init: "{{{1
 let s:cpo= &cpo
@@ -47,7 +47,7 @@ doc/DistractFree.txt	[[[1
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
-Version:    0.4 Sat, 16 Feb 2013 23:00:41 +0100
+Version:    0.5 Wed, 14 Aug 2013 22:36:39 +0200
 Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
@@ -196,7 +196,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
-0.5: (unreleased) {{{1
+0.5: Aug 14, 2013 {{{1
 - updated documentation by Ingo Karkat, Thanks!, issue #1
 - Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
   issue #2)
@@ -222,12 +222,12 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-343
+364
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
-" Version:	   0.4
+" Version:	   0.5
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Sat, 16 Feb 2013 23:00:41 +0100
+" Last Change: Wed, 14 Aug 2013 22:36:39 +0200
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=4357
 " Copyright:   (c) 2009 - 2013 by Christian Brabandt
@@ -236,7 +236,7 @@ autoload/DistractFree.vim	[[[1
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 4357 4 :AutoInstall: DistractFree.vim
+" GetLatestVimScripts: 4357 5 :AutoInstall: DistractFree.vim
 "
 " Functions:
 " (autoloaded) file
@@ -300,6 +300,9 @@ fu! <sid>Init() " {{{2
         let s:minwidth = matchstr(g:distractfree_width, '\d\+')
         let s:minheight = s:minwidth/2
     endif
+	if !exists("s:sessionfile")
+		let s:sessionfile = tempname()
+	endif
 endfu
 
 fu! <sid>LoadFile(cmd) " {{{2
@@ -501,6 +504,21 @@ fu! <sid>SaveHighlighting(pattern) "{{{2
 	call map(b, '''hi ''. v:val')
     return filter(b, 'v:val=~a:pattern')
 endfu
+
+fu! <sid>SaveRestoreWindowSession(save) "{{{2
+	if a:save
+		let _so = &ssop
+		let &ssop = 'blank,buffers,curdir,folds,help,unix,tabpages,winsize'
+		exe ':mksession!' s:sessionfile
+		let &ssop = _so
+	else
+		if exists("s:sessionfile") && filereadable(s:sessionfile)
+			exe ":sil so" s:sessionfile
+			"call delete(s:sessionfile)
+		endif
+	endif
+endfu
+
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active == 1
@@ -519,10 +537,12 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			augroup END
 			augroup! DistractFreeMain
 		endif
+		call <sid>SaveRestoreWindowSession(0)
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
             exe g:distractfree_hook['stop']
         endif
     else
+		call <sid>SaveRestoreWindowSession(1)
 		try
 			sil wincmd o
 		catch
@@ -551,6 +571,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			augroup DistractFreeMain
 				au!
 				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
+				au VimLeave * :call delete(s:sessionfile)
 			augroup END
 		endif
 
