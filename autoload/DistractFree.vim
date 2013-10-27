@@ -155,7 +155,11 @@ fu! <sid>ResetHi(group) "{{{2
 		let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
 		let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	endif
-	exe "sil hi" a:group s:default_hi
+	if s:default_hi == 'cleared'
+		exe "sil hi" a:group "ctermbg=NONE"
+	else
+		exe "sil hi" a:group s:default_hi
+	endif
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
