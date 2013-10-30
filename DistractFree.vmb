@@ -43,7 +43,7 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-177
+208
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
@@ -58,14 +58,15 @@ Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 Contents                                                        *DistractFree*
 ==============================================================================
 
-        1.  DistractFree Manual..........................|DistractFree-manual|
-        2.  Configuration................................|DistractFree-config|
-                2.1 Window size..........................|DistractFree-size|
-                2.2 Set Colorscheme......................|DistractFree-Colorscheme|
-                2.3 Remap keys...........................|DistractFree-maps|
-                2.4 Hooks................................|DistractFree-hooks|
-        3.  DistractFree Feedback........................|DistractFree-feedback|
-        4.  DistractFree History.........................|DistractFree-history|
+        1.  DistractFree Manual.................|DistractFree-manual|
+        2.  Configuration.......................|DistractFree-config|
+                2.1 Window size.................|DistractFree-size|
+                2.2 Set Colorscheme.............|DistractFree-Colorscheme|
+                2.3 Remap keys..................|DistractFree-maps|
+                2.4 Hooks.......................|DistractFree-hooks|
+                2.5 Options.....................|DistractFree-options|
+        3.  DistractFree Feedback...............|DistractFree-feedback|
+        4.  DistractFree History................|DistractFree-history|
 
 =================================================================================
 1. DistractFree Manual                                       *DistractFree-manual*
@@ -171,6 +172,36 @@ on start, you set the variable g:distractfree_hook variable like this: >
 This setups a start hook, that will be executed on Distraction Free Mode start
 (using the "start" key) and stop mode (using the "stop" key).
 
+2.5 Options                                             *DistractFree-options*
+------------
+By default, DistractFree, resets several options, when entering distract free
+mode. The following options will be set:
+
+Option              Value
+------              -----
+cursorcolumn:       off
+cursorline:         off
+fillchars:          vert:|
+guioptions:         empty
+laststatus:         0
+linebreak:          on
+number:             off
+relativenumber:     off
+ruler:              off
+scrolloff:          999
+showtabline:        off
+statusline:         empty
+t_mr:               empty
+textwidth:          width of window
+wrap:               off
+
+If you don't want a particular option to be remapped, that the option
+g:distractfree_keep_options to the option name. For example to keep the number
+option and the wrap option to their current values, set: >
+
+    :let g:distractfree_keep_options = 'number,wrap'
+
+<
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
 ==============================================================================
@@ -222,7 +253,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-364
+382
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
 " Version:	   0.5
@@ -274,22 +305,23 @@ fu! <sid>Init() " {{{2
         let g:distractfree_font = ""
     endif
 
-    " The "scrolloff" value: how many lines should be kept visible above and below
-    " the cursor at all times?  Defaults to 999 (which centers your cursor in the 
-    " active window).
-    if !exists( "g:distractfree_scrolloff" )
-        let g:distractfree_scrolloff = 999
-    endif
 
     if exists("g:distractfree_nomap_keys")
         let s:distractfree_nomap_keys = g:distractfree_nomap_keys
     endif
 
-    " Should DistractFree clear line numbers from the buffer?  Defaults to `1`
-    " (on). Set to `0` if you'd prefer to leave line numbers untouched.
-    if !exists( "g:distractfree_line_numbers" )
-        let g:distractfree_line_numbers = 1
-    endif
+	" Set those options to their values in distractfree mode, if you don't
+	" want them to be set, set the option g:distractfree_keep_options to
+	" include the option values
+	"
+    " The "scrolloff" value: how many lines should be kept visible above and below
+    " the cursor at all times?  Defaults to 999 (which centers your cursor in the 
+    " active window).
+	let s:_def_opts = {'t_mr': '', 'scrolloff': get(g:, 'distractfree_scrolloff', 999), 'laststatus': 0,
+				\ 'textwidth': winwidth(winnr()), 'number': 0, 'relativenumber': 0, 'linebreak': 1, 'wrap': 0,
+				\ 'g:statusline': '%#Normal#', 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
+				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0}
+
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
     if match(g:distractfree_width, '%') > -1 && has('float')
@@ -333,15 +365,20 @@ fu! <sid>SaveRestore(save) " {{{2
 			sil! let &guifont=g:distractfree_font
 		endif
 
-        let s:_a = 
-            \ [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ]
-        if exists("+rnu")
-            let s:_rnu = &l:rnu
-        endif
-        exe printf("setlocal t_mr= so=%s ls=0 tw=%s nonu nornu lbr nowrap stl= nocul nocuc noru go=", g:distractfree_scrolloff, winwidth(winnr()))
-        " Set statusline highlighting to normal hi group (so not displayed at all
-        let &l:stl='%#Normal#'
-        let &g:stl='%#Normal#'
+		let s:_opts = {}
+
+		for opt in keys(s:_def_opts)
+			if match(get(g:, 'distractfree_keep_options', ''), opt) > -1
+				continue
+			elseif exists("+". (opt=~ '^[glw]:' ? opt[2:] : opt))
+				if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
+					" Disable airline statusline
+					:AirlineToggle
+				endif
+				exe 'let s:_opts["'.opt. '"] = &'. (opt =~ '^[glw]:' ? '' : 'l:'). opt
+				exe 'let &'. (opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. s:_def_opts[opt].'"'
+			endif
+		endfor
 		" Try to load the specified colorscheme
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
@@ -365,10 +402,18 @@ fu! <sid>SaveRestore(save) " {{{2
 		if exists("s:guifont")
 			let &guifont = s:guifont
 		endif
-        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
-        if exists("+rnu")
-            let &l:rnu = s:_rnu
-        endif
+		for [opt, val] in items(s:_opts)
+			if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
+				" Disable airline statusline
+				:AirlineToggle
+			endif
+			exe 'let &'.(opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. val.'"'
+		endfor
+
+"        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
+"        if exists("+rnu")
+"            let &l:rnu = s:_rnu
+"        endif
     endif
 endfu
 
@@ -380,7 +425,11 @@ fu! <sid>ResetHi(group) "{{{2
 		let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
 		let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
 	endif
-	exe "sil hi" a:group s:default_hi
+	if s:default_hi == 'cleared'
+		exe "sil syn clear" a:group
+	else
+		exe "sil hi" a:group s:default_hi
+	endif
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2

@@ -12,14 +12,15 @@ Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt
 Contents                                                        *DistractFree*
 ==============================================================================
 
-        1.  DistractFree Manual..........................|DistractFree-manual|
-        2.  Configuration................................|DistractFree-config|
-                2.1 Window size..........................|DistractFree-size|
-                2.2 Set Colorscheme......................|DistractFree-Colorscheme|
-                2.3 Remap keys...........................|DistractFree-maps|
-                2.4 Hooks................................|DistractFree-hooks|
-        3.  DistractFree Feedback........................|DistractFree-feedback|
-        4.  DistractFree History.........................|DistractFree-history|
+        1.  DistractFree Manual.................|DistractFree-manual|
+        2.  Configuration.......................|DistractFree-config|
+                2.1 Window size.................|DistractFree-size|
+                2.2 Set Colorscheme.............|DistractFree-Colorscheme|
+                2.3 Remap keys..................|DistractFree-maps|
+                2.4 Hooks.......................|DistractFree-hooks|
+                2.5 Options.....................|DistractFree-options|
+        3.  DistractFree Feedback...............|DistractFree-feedback|
+        4.  DistractFree History................|DistractFree-history|
 
 =================================================================================
 1. DistractFree Manual                                       *DistractFree-manual*
@@ -125,6 +126,36 @@ on start, you set the variable g:distractfree_hook variable like this: >
 This setups a start hook, that will be executed on Distraction Free Mode start
 (using the "start" key) and stop mode (using the "stop" key).
 
+2.5 Options                                             *DistractFree-options*
+------------
+By default, DistractFree, resets several options, when entering distract free
+mode. The following options will be set:
+
+Option              Value
+------              -----
+cursorcolumn:       off
+cursorline:         off
+fillchars:          vert:|
+guioptions:         empty
+laststatus:         0
+linebreak:          on
+number:             off
+relativenumber:     off
+ruler:              off
+scrolloff:          999
+showtabline:        off
+statusline:         empty
+t_mr:               empty
+textwidth:          width of window
+wrap:               off
+
+If you don't want a particular option to be remapped, that the option
+g:distractfree_keep_options to the option name. For example to keep the number
+option and the wrap option to their current values, set: >
+
+    :let g:distractfree_keep_options = 'number,wrap'
+
+<
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
 ==============================================================================
