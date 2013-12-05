@@ -321,23 +321,29 @@ fu! DistractFree#DistractFreeToggle() "{{{2
     if s:distractfree_active == 1
         " Close upper/lower/left/right split windows
 		" ignore errors
-		exe "sil! ". s:bwipe. "bw"
-        unlet! s:bwipe
-        " Reset options
-        call <sid>SaveRestore(0)
-        " Reset mappings
-        call <sid>MapKeys(0)
-		" Reset closing autocommand
-		if exists("#DistractFreeMain")
-			augroup DistractFreeMain
-				au!
-			augroup END
-			augroup! DistractFreeMain
-		endif
-		call <sid>SaveRestoreWindowSession(0)
-        if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
-            exe g:distractfree_hook['stop']
-        endif
+		try
+			exe s:bwipe. "bw"
+			call <sid>SaveRestoreWindowSession(0)
+		catch " catch all
+			let s:distractfree_active = 0
+			return
+		finally 
+			unlet! s:bwipe
+			" Reset options
+			call <sid>SaveRestore(0)
+			" Reset mappings
+			call <sid>MapKeys(0)
+			" Reset closing autocommand
+			if exists("#DistractFreeMain")
+				augroup DistractFreeMain
+					au!
+				augroup END
+				augroup! DistractFreeMain
+			endif
+			if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
+				exe g:distractfree_hook['stop']
+			endif
+		endtry
     else
 		call <sid>SaveRestoreWindowSession(1)
 		try
