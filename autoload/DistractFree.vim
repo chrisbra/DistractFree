@@ -61,16 +61,20 @@ fu! <sid>Init() " {{{2
     " The "scrolloff" value: how many lines should be kept visible above and below
     " the cursor at all times?  Defaults to 999 (which centers your cursor in the 
     " active window).
-	let s:_def_opts = {'t_mr': '', 'scrolloff': get(g:, 'distractfree_scrolloff', 999), 'laststatus': 0,
-				\ 'textwidth': winwidth(winnr()), 'number': 0, 'relativenumber': 0, 'linebreak': 1, 'wrap': 0,
-				\ 'g:statusline': '%#Normal#', 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
-				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0}
+	let s:_def_opts = {'t_mr': '', 'scrolloff': get(g:, 'distractfree_scrolloff', 999),
+				\ 'laststatus': 0, 'textwidth': winwidth(winnr()), 'number': 0,
+				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
+				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
+				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0,
+				\ 'showbreak': ''}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
     if match(g:distractfree_width, '%') > -1 && has('float')
-        let s:minwidth  = float2nr(round(&columns * (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
-        let s:minheight = float2nr(round(&lines * (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
+        let s:minwidth  = float2nr(round(&columns *
+				\ (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
+        let s:minheight = float2nr(round(&lines *
+				\ (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
     else
         " assume g:distractfree_width contains columns
         let s:minwidth = matchstr(g:distractfree_width, '\d\+')
