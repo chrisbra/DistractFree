@@ -15,6 +15,7 @@
 "
 " Functions:
 " (autoloaded) file
+let s:distractfree_active = 0
 
 " Functions: "{{{1
 " Output a warning message, if 'verbose' is set
@@ -32,7 +33,6 @@ fu! <sid>WarningMsg(text, force) "{{{2
 	echohl None
 endfu
 
-let s:distractfree_active = 0
 fu! <sid>Init() " {{{2
     " The desired column width.  Defaults to 90%
     if !exists( "g:distractfree_width" )
@@ -183,7 +183,9 @@ fu! <sid>ResetHi(group) "{{{2
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
-    exe a:cmd
+	let cmd_mod = ''
+	if exists(":noswapfile") | let cmd_mod  = ':noswapfile' | endif
+    exe cmd_mod a:cmd
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
     let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
