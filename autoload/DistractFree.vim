@@ -151,17 +151,19 @@ fu! <sid>SaveRestore(save) " {{{2
 			let &guifont = s:guifont
 		endif
 		for [opt, val] in items(s:_opts)
-			if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
-				" Disable airline statusline
-				:AirlineToggle
-			endif
 			exe 'let &'.(opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. val.'"'
+			if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
+				" Enable airline statusline
+				" Make sure airline autocommand does not exists (else it might disable Airline again)
+				aug airline
+					au!
+				aug end
+				aug! airline
+				AirlineToggle
+				" Make sure, statusline is updated immediately
+				doauto <nomodeline> airline VimEnter
+			endif
 		endfor
-
-"        let [ &l:t_mr, &l:so, &l:ls, &l:tw, &l:nu, &l:lbr, &l:wrap, &l:stl, &g:stl, &l:cul, &l:cuc, &l:go, &l:fcs, &l:ru ] = s:_a
-"        if exists("+rnu")
-"            let &l:rnu = s:_rnu
-"        endif
     endif
 endfu
 
