@@ -186,6 +186,8 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
   thanks!)
 - have the user control resetting the options (partly #5, reported by atomixz,
   thanks!, see :h DistractFree-options)
+- Catch |E325| when sourcing session file
+- Better |airline| integration
 0.5: Aug 14, 2013 {{{1
 - updated documentation by Ingo Karkat, Thanks!, issue #1
 - Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
