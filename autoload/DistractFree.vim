@@ -160,8 +160,6 @@ fu! <sid>SaveRestore(save) " {{{2
 				aug end
 				aug! airline
 				AirlineToggle
-				" Make sure, statusline is updated immediately
-				doauto <nomodeline> airline VimEnter
 			endif
 		endfor
     endif
@@ -347,6 +345,10 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			endif
 			if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
 				exe g:distractfree_hook['stop']
+			endif
+			if exists("#airline")
+			" Make sure, statusline is updated immediately
+				doauto <nomodeline> airline VimEnter
 			endif
 		endtry
     else
