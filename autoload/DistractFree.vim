@@ -322,7 +322,7 @@ endfu
 
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
-    if s:distractfree_active == 1
+    if s:distractfree_active
         " Close upper/lower/left/right split windows
 		" ignore errors
 		try
@@ -333,6 +333,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			return
 		finally 
 			unlet! s:bwipe
+			let s:distractfree_active=0
 			" Reset options
 			call <sid>SaveRestore(0)
 			" Reset mappings
@@ -386,8 +387,8 @@ fu! DistractFree#DistractFreeToggle() "{{{2
             exe g:distractfree_hook['start']
         endif
 		" exe "windo | if winnr() !=".winnr(). "|let &l:stl='%#Normal#'|endif"
+		let s:distractfree_active=1
     endif
-    let s:distractfree_active = !s:distractfree_active
 endfunction
 
 fu! DistractFree#Active() "{{{2
