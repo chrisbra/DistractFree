@@ -312,7 +312,15 @@ fu! <sid>SaveRestoreWindowSession(save) "{{{2
 		let &ssop = _so
 	else
 		if exists("s:sessionfile") && filereadable(s:sessionfile)
+			aug DistractFree_SessionLoad
+				au!
+				au SwapExists * call <sid>WarningMsg("[DistractFree:] Found swapfile ".v:swapname.". Opening [RO]!",1)|let v:swapchoice='o'
+			aug end
 			exe ":sil so" s:sessionfile
+			aug DistractFree_SessionLoad
+				au!
+			aug end
+			aug! DistractFree_SessionLoad
 			"call delete(s:sessionfile)
 		endif
 	endif
