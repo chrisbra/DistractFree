@@ -1,0 +1,4 @@
+(issues to work on, in the order or appearance):
+
+- Center the distract free window.
+- Make a nice statusline?
