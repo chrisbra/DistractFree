@@ -155,11 +155,17 @@ fu! <sid>SaveRestore(save) " {{{2
 			if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
 				" Enable airline statusline
 				" Make sure airline autocommand does not exists (else it might disable Airline again)
-				aug airline
-					au!
-				aug end
-				aug! airline
-				AirlineToggle
+				if exists('#airline')
+					exe "aug airline"| exe "au!"|exe "aug end"|exe "aug! airline"
+				endif
+				if exists(":AirlineToggle") == 2
+					AirlineToggle
+				endif
+				if exists(":AirlineRefresh") == 2
+					" force refreshing the highlighting groups (might be off
+					" because of loading a different color scheme).
+					AirlineRefresh
+				endif
 			endif
 		endfor
     endif
