@@ -185,8 +185,8 @@ fu! <sid>ResetHi(group) "{{{2
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
-	" needs some 7.4.1XX patch
 	"call <sid>WarningMsg(printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile': ''),a:cmd),0)
+	" needs some 7.4.1XX patch
 	exe printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile': ''),a:cmd)
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
     let &l:stl='%#Normal#'
@@ -330,7 +330,6 @@ fu! <sid>SaveRestoreWindowSession(save) "{{{2
 		endif
 	endif
 endfu
-
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active
@@ -374,12 +373,14 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			call <sid>WarningMsg("Can't start DistractFree mode, other windows contain non-saved changes!", 1)
 			return
 		endtry
-        let s:sidebar = (&columns - s:minwidth) / 2
-        let s:lines = (&lines - s:minheight) / 2
+		" minus two for the window border
+        let s:sidebar = ((&columns-2) - s:minwidth) / 2
+        let s:lines = ((&lines-2) - s:minheight) / 2
         " Create the left sidebar
-        call <sid>NewWindow("leftabove vert ".  s:sidebar. "split new")
+        call <sid>NewWindow("leftabove vert ".  (s:sidebar+s:sidebar/2). "split new")
         " Create the right sidebar
-        call <sid>NewWindow("rightbelow vert ". s:sidebar. "split new")
+		" adjust sidebar widht (left width should be wider than right width)
+        call <sid>NewWindow("rightbelow vert ". (s:sidebar-s:sidebar/2). "split new")
         " Create the top sidebar
         call <sid>NewWindow("leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
