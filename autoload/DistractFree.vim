@@ -54,7 +54,7 @@ fu! <sid>Init() " {{{2
 				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
 				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0,
-				\ 'showbreak': ''}
+				\ 'showbreak': '', 'foldenable': 0}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
