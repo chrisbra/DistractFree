@@ -5,7 +5,7 @@
 " Last Change: Wed, 14 Aug 2013 22:36:39 +0200
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=4357
-" Copyright:   (c) 2009 - 2013 by Christian Brabandt
+" Copyright:   (c) 2009 - 2014 by Christian Brabandt
 "			   The VIM LICENSE applies to DistractFree.vim 
 "			   (see |copyright|) except use "DistractFree.vim" 
 "			   instead of "Vim".
@@ -20,7 +20,7 @@ let s:distractfree_active = 0
 " Functions: "{{{1
 " Output a warning message, if 'verbose' is set
 fu! <sid>WarningMsg(text, force) "{{{2
-	let text = "[DistractFree: ]". a:text
+	let text = "[DistractFree:]". a:text
 	let v:errmsg = text
 	if !&verbose && !a:force
 		return
@@ -31,25 +31,16 @@ fu! <sid>WarningMsg(text, force) "{{{2
 endfu
 
 fu! <sid>Init() " {{{2
-    " The desired column width.  Defaults to 90%
-    if !exists( "g:distractfree_width" )
-        let g:distractfree_width = '90%'
-    endif
+    " The desired column width. Defaults to 75%
+	let g:distractfree_width       = get(g:, 'distractfree_width', '75%')
+    " The desired height  Defaults to 80%
+	let g:distractfree_height      = get(g:, 'distractfree_height', '80%')
 
     " The colorscheme to load
-    if !exists( "g:distractfree_colorscheme" )
-        let g:distractfree_colorscheme = ""
-    endif
+	let g:distractfree_colorscheme = get(g:, 'distractfree_colorscheme', '')
 
     " The font to use
-    if !exists( "g:distractfree_font" )
-        let g:distractfree_font = ""
-    endif
-
-
-    if exists("g:distractfree_nomap_keys")
-        let s:distractfree_nomap_keys = g:distractfree_nomap_keys
-    endif
+	let g:distractfree_font        = get(g:, 'distractfee_font', '')
 
 	" Set those options to their values in distractfree mode, if you don't
 	" want them to be set, set the option g:distractfree_keep_options to
@@ -70,12 +61,16 @@ fu! <sid>Init() " {{{2
     if match(g:distractfree_width, '%') > -1 && has('float')
         let s:minwidth  = float2nr(round(&columns *
 				\ (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
+	else
+        let s:minwidth = matchstr(g:distractfree_width, '\d\+')
+	endif
+
+    if match(g:distractfree_height, '%') > -1 && has('float')
         let s:minheight = float2nr(round(&lines *
-				\ (matchstr(g:distractfree_width, '\d\+')+0.0)/100.0))
+				\ (matchstr(g:distractfree_height, '\d\+')+0.0)/100.0))
     else
         " assume g:distractfree_width contains columns
-        let s:minwidth = matchstr(g:distractfree_width, '\d\+')
-        let s:minheight = s:minwidth/2
+        let s:minheight = matchstr(g:distractfree_height, '\d\+')
     endif
 	if !exists("s:sessionfile")
 		let s:sessionfile = tempname()
@@ -184,7 +179,9 @@ fu! <sid>ResetHi(group) "{{{2
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
-	exe printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile ': ''),a:cmd)
+	" needs some 7.4.1XX patch
+	"call <sid>WarningMsg(printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile': ''),a:cmd),0)
+	exe printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile': ''),a:cmd)
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
     let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
@@ -211,7 +208,8 @@ fu! <sid>BufEnterHidden() "{{{2
 endfu
 
 fu! <sid>MapKeys(enable) "{{{2
-    if exists("s:distractfree_nomap_keys") && s:distractfree_nomap_keys
+	" Disallow remapping of keys
+	if get(g:, 'distractfree_nomap_keys', 0)
         return
     endif
 	if !exists("s:mapped_keys")
@@ -374,9 +372,9 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
-        call <sid>NewWindow("leftabove ".  s:sidebar. "vsplit new")
+        call <sid>NewWindow("leftabove vert ".  s:sidebar. "split new")
         " Create the right sidebar
-        call <sid>NewWindow("rightbelow ". s:sidebar. "vsplit new")
+        call <sid>NewWindow("rightbelow vert ". s:sidebar. "split new")
         " Create the top sidebar
         call <sid>NewWindow("leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
