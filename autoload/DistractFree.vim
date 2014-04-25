@@ -111,11 +111,10 @@ fu! <sid>SaveRestore(save) " {{{2
 			if match(get(g:, 'distractfree_keep_options', ''), opt) > -1
 				continue
 			elseif exists("+". (opt=~ '^[glw]:' ? opt[2:] : opt))
-				if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
-					" Disable airline statusline
-					:AirlineToggle
+				if (opt == 'g:statusline')
+					" Disable custom statusline
+					call <sid>ResetStl(1)
 				endif
-					exe 'let s:_opts["'.opt. '"] = &'. (opt =~ '^[glw]:' ? '' : 'l:'). opt
 				exe 'let s:_opts["'.opt. '"] = &'. (opt =~ '^[glw]:' ? '' : 'l:'). opt
 				if (opt == 'textwidth')
 					" needs to be evaluated
@@ -150,20 +149,13 @@ fu! <sid>SaveRestore(save) " {{{2
 		endif
 		for [opt, val] in items(s:_opts)
 			exe 'let &'.(opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. val.'"'
-			if (opt == 'g:statusline' && get(g:, 'loaded_airline', 0) && exists(":AirlineToggle") == 2)
+			if (opt == 'g:statusline')
 				" Enable airline statusline
 				" Make sure airline autocommand does not exists (else it might disable Airline again)
 				if exists('#airline')
 					exe "aug airline"| exe "au!"|exe "aug end"|exe "aug! airline"
 				endif
-				if exists(":AirlineToggle") == 2
-					AirlineToggle
-				endif
-				if exists(":AirlineRefresh") == 2
-					" force refreshing the highlighting groups (might be off
-					" because of loading a different color scheme).
-					AirlineRefresh
-				endif
+				call <sid>ResetStl(0)
 			endif
 		endfor
     endif
@@ -330,6 +322,29 @@ fu! <sid>SaveRestoreWindowSession(save) "{{{2
 		endif
 	endif
 endfu
+fu! <sid>ResetStl(reset) "{{{2
+	if a:reset
+		" disable custom statusline
+		if exists("#airline") && exists(":AirlineToggle") == 2
+			:AirlineToggle
+		endif
+		let s:_stl = &l:stl
+		let &l:stl='%#Normal#'
+	else
+		if exists("s:_stl") && !exists(":AirlineToggle")
+			let &l:stl=s:_stl
+		endif
+		if !exists("#airline") && exists(":AirlineToggle") == 2
+			" enable airline
+			:AirlineToggle
+		endif
+		if exists(":AirlineRefresh") == 2
+			" force refreshing the highlighting groups (might be off
+			" because of loading a different color scheme).
+			AirlineRefresh
+		endif
+	endif
+endfu
 fu! DistractFree#DistractFreeToggle() "{{{2
     call <sid>Init()
     if s:distractfree_active
@@ -391,12 +406,17 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>MapKeys(1)
 
 		" Set autocommand for closing the sidebar
-		if exists("##QuitPre")
-			augroup DistractFreeMain
-				au!
+		aug DistractFreeMain
+			au!
+			if exists("##QuitPre")
 				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
-				au VimLeave * :call delete(s:sessionfile)
-			augroup END
+			endif
+			au VimLeave * :call delete(s:sessionfile)
+			au InsertEnter <buffer> call <sid>ResetStl(1)
+			au InsertLeave <buffer> call <sid>ResetStl(0)
+		aug END
+		if get(g:, 'distractfree_enable_normalmode_stl',0)
+			call <sid>ResetStl(0)
 		endif
 
         if exists("g:distractfree_hook") && get(g:distractfree_hook, 'start', 0) != 0
