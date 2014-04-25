@@ -50,7 +50,7 @@ fu! <sid>Init() " {{{2
     " the cursor at all times?  Defaults to 999 (which centers your cursor in the 
     " active window).
 	let s:_def_opts = {'t_mr': '', 'scrolloff': get(g:, 'distractfree_scrolloff', 999),
-				\ 'laststatus': 0, 'textwidth': winwidth(winnr()), 'number': 0,
+				\ 'laststatus': 0, 'textwidth': 'winwidth(winnr())', 'number': 0,
 				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
 				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0,
@@ -115,8 +115,14 @@ fu! <sid>SaveRestore(save) " {{{2
 					" Disable airline statusline
 					:AirlineToggle
 				endif
+					exe 'let s:_opts["'.opt. '"] = &'. (opt =~ '^[glw]:' ? '' : 'l:'). opt
 				exe 'let s:_opts["'.opt. '"] = &'. (opt =~ '^[glw]:' ? '' : 'l:'). opt
-				exe 'let &'. (opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. s:_def_opts[opt].'"'
+				if (opt == 'textwidth')
+					" needs to be evaluated
+					exe 'let &l:'.opt. '='. s:_def_opts[opt]
+				else
+					exe 'let &'. (opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. s:_def_opts[opt].'"'
+				endif
 			endif
 		endfor
 		" Try to load the specified colorscheme
@@ -368,7 +374,6 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			call <sid>WarningMsg("Can't start DistractFree mode, other windows contain non-saved changes!", 1)
 			return
 		endtry
-        call <sid>SaveRestore(1)
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
@@ -379,6 +384,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         call <sid>NewWindow("leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
         call <sid>NewWindow("rightbelow ". s:lines.   "split new")
+        call <sid>SaveRestore(1)
         " Setup navigation over "display lines", not "logical lines" if
         " mappings for the navigation keys don't already exist.
         call <sid>MapKeys(1)
