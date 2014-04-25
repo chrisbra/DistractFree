@@ -20,10 +20,7 @@ let s:distractfree_active = 0
 " Functions: "{{{1
 " Output a warning message, if 'verbose' is set
 fu! <sid>WarningMsg(text, force) "{{{2
-	if empty(a:text)
-		return
-	endif
-	let text = "DistractFree: ". a:text
+	let text = "[DistractFree: ]". a:text
 	let v:errmsg = text
 	if !&verbose && !a:force
 		return
@@ -320,7 +317,7 @@ fu! <sid>SaveRestoreWindowSession(save) "{{{2
 		if exists("s:sessionfile") && filereadable(s:sessionfile)
 			aug DistractFree_SessionLoad
 				au!
-				au SwapExists * call <sid>WarningMsg("[DistractFree:] Found swapfile ".v:swapname.". Opening [RO]!",1)|let v:swapchoice='o'
+				au SwapExists * call <sid>WarningMsg("Found swapfile ".v:swapname.". Opening [RO]!",1)|let v:swapchoice='o'
 			aug end
 			exe ":sil so" s:sessionfile
 			aug DistractFree_SessionLoad
