@@ -48,17 +48,18 @@ mode and Distraction Free mode. (If you haven't setup your leaderkey, see also
 2 DistractFree Configuration                                   *DistractFree-config*
 ==================================================================================
 
-2.1 Window width/height                                      *DistractFree-size*
------------------------
+2.1 Window width                                          *DistractFree-size*
+----------------
 
 By default, DistractFree create a frame around the main window, such that the
-main buffer contains 90% of the available Vim window screen size. You can
-change this, by specifying either a percentage or width (in columns) by
-setting the g:distractfree_width variable, e.g. to have the window be resized
-to 95% of the Vim window, put into your |.vimrc| the following: >
+main buffer contains 75% of the available Vim window screen width and 80% of
+the available Vim widnow screen height. You can change this, by specifying
+either a percentage or absolute size width (in columns) by setting the
+g:distractfree_width variable, e.g. to have the window be resized to 95% of
+the Vim window, put into your |.vimrc| the following: >
 
     :let g:distractfree_width = '95%'
-<
+    :let g:distractfree_height= '95%'
 
 2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
 -------------------------------
@@ -188,6 +189,9 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
   thanks!, see :h DistractFree-options)
 - Catch |E325| when sourcing session file
 - Better |airline| integration
+- Make left border wider than right border (so that the window will look more
+  centered)
+- let width and height be set separately
 0.5: Aug 14, 2013 {{{1
 - updated documentation by Ingo Karkat, Thanks!, issue #1
 - Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
