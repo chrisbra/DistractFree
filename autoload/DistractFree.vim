@@ -184,9 +184,7 @@ fu! <sid>ResetHi(group) "{{{2
 endfu
 
 fu! <sid>NewWindow(cmd) "{{{2
-	let cmd_mod = ''
-	if exists(":noswapfile") | let cmd_mod  = ':noswapfile' | endif
-    exe cmd_mod a:cmd
+	exe printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile ': ''),a:cmd)
     sil! setlocal noma nocul nonu nornu buftype=nofile winfixwidth winfixheight nobuflisted bufhidden=wipe
     let &l:stl='%#Normal#'
     let s:bwipe = bufnr('%')
@@ -376,13 +374,13 @@ fu! DistractFree#DistractFreeToggle() "{{{2
         let s:sidebar = (&columns - s:minwidth) / 2
         let s:lines = (&lines - s:minheight) / 2
         " Create the left sidebar
-        call <sid>NewWindow("noa sil leftabove ".  s:sidebar. "vsplit new")
+        call <sid>NewWindow("leftabove ".  s:sidebar. "vsplit new")
         " Create the right sidebar
-        call <sid>NewWindow("noa sil rightbelow ". s:sidebar. "vsplit new")
+        call <sid>NewWindow("rightbelow ". s:sidebar. "vsplit new")
         " Create the top sidebar
-        call <sid>NewWindow("noa sil leftabove ".  s:lines.   "split new")
+        call <sid>NewWindow("leftabove ".  s:lines.   "split new")
         " Create the bottom sidebar
-        call <sid>NewWindow("noa sil rightbelow ". s:lines.   "split new")
+        call <sid>NewWindow("rightbelow ". s:lines.   "split new")
         " Setup navigation over "display lines", not "logical lines" if
         " mappings for the navigation keys don't already exist.
         call <sid>MapKeys(1)
