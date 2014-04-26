@@ -48,17 +48,18 @@ mode and Distraction Free mode. (If you haven't setup your leaderkey, see also
 2 DistractFree Configuration                                   *DistractFree-config*
 ==================================================================================
 
-2.1 Window width/height                                      *DistractFree-size*
------------------------
+2.1 Window width                                          *DistractFree-size*
+----------------
 
 By default, DistractFree create a frame around the main window, such that the
-main buffer contains 90% of the available Vim window screen size. You can
-change this, by specifying either a percentage or width (in columns) by
-setting the g:distractfree_width variable, e.g. to have the window be resized
-to 95% of the Vim window, put into your |.vimrc| the following: >
+main buffer contains 75% of the available Vim window screen width and 80% of
+the available Vim widnow screen height. You can change this, by specifying
+either a percentage or absolute size width (in columns) by setting the
+g:distractfree_width variable, e.g. to have the window be resized to 95% of
+the Vim window, put into your |.vimrc| the following: >
 
     :let g:distractfree_width = '95%'
-<
+    :let g:distractfree_height= '95%'
 
 2.2 Load a specific colorscheme                    *DistractFree-Colorscheme*
 -------------------------------
@@ -146,7 +147,7 @@ scrolloff:          999
 showtabline:        off
 statusline:         empty
 t_mr:               empty
-textwidth:          width of window
+textwidth:          width of distractfree window
 wrap:               off
 
 If you don't want a particular option to be remapped, that the option
@@ -154,7 +155,12 @@ g:distractfree_keep_options to the option name. For example to keep the number
 option and the wrap option to their current values, set: >
 
     :let g:distractfree_keep_options = 'number,wrap'
+<
 
+If you like to keep your nice custom configured statusline during normalmode
+in distractfree mode, simply set: >
+
+    :let g:distractfree_enable_normalmode_stl = 1
 <
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
@@ -181,6 +187,18 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 4. DistractFree History                                   *DistractFree-history*
 ==============================================================================
 
+0.6: (unreleased) {{{1
+- make sure, Normal highlight group is set correctly (#4, reported by atomixz,
+  thanks!)
+- have the user control resetting the options (partly #5, reported by atomixz,
+  thanks!, see :h DistractFree-options)
+- Catch |E325| when sourcing session file
+- Better |airline| integration
+- Make left border wider than right border (so that the window will look more
+  centered)
+- let width and height be set separately
+- Enable custom statusline during normal mode when
+  g:distractfree_enable_normalmode_stl=1
 0.5: Aug 14, 2013 {{{1
 - updated documentation by Ingo Karkat, Thanks!, issue #1
 - Make State of plugin avaivable to extern (patch by Ingo Karkat, Thanks!,
