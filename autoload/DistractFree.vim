@@ -54,7 +54,7 @@ fu! <sid>Init() " {{{2
 				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
 				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert: ', 'showtabline': 0,
-				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': ''}
+				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': '', 'lazyredraw': 1}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
@@ -160,6 +160,8 @@ fu! <sid>SaveRestore(save) " {{{2
 endfu
 
 fu! <sid>ResetHi(group) "{{{2
+	" not needed anymore
+	" Resets a:group to Normal highlighting group
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
 		let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
@@ -327,7 +329,9 @@ fu! <sid>ResetStl(reset) "{{{2
 			:AirlineToggle
 		endif
 		let s:_stl = &l:stl
-		let &l:stl='%#Normal#'
+		let cur_win = winnr()
+		windo let &l:stl='%#Normal#'
+		exe "noa" cur_win "wincmd w"
 	else
 		if exists("s:_stl") && !exists(":AirlineToggle")
 			let &l:stl=s:_stl
@@ -410,8 +414,10 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
 			endif
 			au VimLeave * :call delete(s:sessionfile)
-			au InsertEnter <buffer> call <sid>ResetStl(1)
-			au InsertLeave <buffer> call <sid>ResetStl(0)
+			if get(g:, 'distractfree_enable_normalmode_stl',0)
+				au InsertEnter <buffer> call <sid>ResetStl(1)
+				au InsertLeave <buffer> call <sid>ResetStl(0)
+			endif
 		aug END
 		if get(g:, 'distractfree_enable_normalmode_stl',0)
 			call <sid>ResetStl(0)
