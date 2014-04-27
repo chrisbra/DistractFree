@@ -98,7 +98,7 @@ fu! <sid>SaveRestore(save) " {{{2
 		let s:main_buffer = bufnr('')
 		if exists("g:colors_name")
 			let s:colors = g:colors_name
-			let s:higroups = <sid>SaveHighlighting('User')
+			let s:higroups = <sid>SaveHighlighting('User\|NonText')
 		endif
 		if !empty(g:distractfree_font)
 			let s:guifont = &guifont
@@ -126,15 +126,13 @@ fu! <sid>SaveRestore(save) " {{{2
 		endfor
 		" Try to load the specified colorscheme
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
-			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
-			if !(<sid>LoadFile(colors))
-				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!",0)
-			endif
+			" prevent CSApprox from kicking in...
+			exe "noa colorscheme" fnamemodify(g:distractfree_colorscheme, ':r')
 		endif
         " Set highlighting
-        for hi in ['VertSplit', 'NonText', 'SignColumn']
-            call <sid>ResetHi(hi)
-        endfor
+        " for hi in ['VertSplit', 'NonText', 'SignColumn']
+        "    call <sid>ResetHi(hi)
+        " endfor
     else
 		unlet! s:main_buffer
 		unlet! g:colors_name
