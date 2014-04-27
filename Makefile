@@ -1,7 +1,7 @@
 SCRIPT=$(wildcard plugin/*.vim)
 DOC=$(wildcard doc/*.txt)
 AUTOL=$(wildcard autoload/*.vim)
-COLORS=colors/darkroom.vim
+COLORS=$(wildcard colors/*.vim)
 PLUGIN=$(shell basename $$PWD)
 VERSION=$(shell sed -n '/Version:/{s/^.*\(\S\.\S\+\)$$/\1/;p}' $(SCRIPT))
 
