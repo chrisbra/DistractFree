@@ -43,12 +43,12 @@ let &cpo=s:cpo
 unlet s:cpo
 " vim: ts=4 sts=4 fdm=marker et com+=l\:\"
 doc/DistractFree.txt	[[[1
-226
+236
 *DistractFree.txt*   A plugin for WriteRoom like Editing with Vim
 
 Author:     Christian Brabandt <cb@256bit.org>
 Version:    0.5 Wed, 14 Aug 2013 22:36:39 +0200
-Copyright:  (c) 2009, 2010, 2011, 2012 by Christian Brabandt         
+Copyright:  (c) 2009 - 2014 by Christian Brabandt         
             The VIM LICENSE applies to DistractFree.txt
             (see |copyright|) except use DistractFree instead of "Vim".
             NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
@@ -195,6 +195,9 @@ statusline:         empty
 t_mr:               empty
 textwidth:          width of distractfree window
 wrap:               off
+lazyredraw:         on
+tabline:            empty
+guitablabel:        empty
 
 If you don't want a particular option to be remapped, that the option
 g:distractfree_keep_options to the option name. For example to keep the number
@@ -202,12 +205,19 @@ option and the wrap option to their current values, set: >
 
     :let g:distractfree_keep_options = 'number,wrap'
 <
+Note: You need to set the long option names!
 
 If you like to keep your nice custom configured statusline during normalmode
 in distractfree mode, simply set: >
 
     :let g:distractfree_enable_normalmode_stl = 1
 <
+The bundled Colorscheme allows to set the bg to transparent mode in the
+terminal. If you like that, simply set: >
+
+    :let g:distractfree_transparent_term = 1
+<
+
 ==============================================================================
 3. DistractFree Feedback                                 *DistractFree-feedback*
 ==============================================================================
@@ -271,7 +281,7 @@ looking at my Amazon whishlist: http://www.amazon.de/wishlist/2BKAHE8J7Z6UW
 Modeline:
 vim:tw=78:ts=8:ft=help:et:fdm=marker:fdl=0:norl
 autoload/DistractFree.vim	[[[1
-433
+437
 " DistractFree.vim - A DarkRoom/WriteRoom like plugin
 " -------------------------------------------------------------
 " Version:	   0.5
@@ -327,8 +337,8 @@ fu! <sid>Init() " {{{2
 				\ 'laststatus': 0, 'textwidth': 'winwidth(winnr())', 'number': 0,
 				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
-				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert:|', 'showtabline': 0,
-				\ 'showbreak': '', 'foldenable': 0}
+				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert: ', 'showtabline': 0,
+				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': '', 'lazyredraw': 1}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
@@ -372,7 +382,7 @@ fu! <sid>SaveRestore(save) " {{{2
 		let s:main_buffer = bufnr('')
 		if exists("g:colors_name")
 			let s:colors = g:colors_name
-			let s:higroups = <sid>SaveHighlighting('User')
+			let s:higroups = <sid>SaveHighlighting('User\|NonText')
 		endif
 		if !empty(g:distractfree_font)
 			let s:guifont = &guifont
@@ -400,15 +410,13 @@ fu! <sid>SaveRestore(save) " {{{2
 		endfor
 		" Try to load the specified colorscheme
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
-			let colors = "colors/". g:distractfree_colorscheme . (g:distractfree_colorscheme[-4:] == ".vim" ? "" : ".vim")
-			if !(<sid>LoadFile(colors))
-				call <sid>WarningMsg("Colorscheme ". g:distractfree_colorscheme. " not found!",0)
-			endif
+			" prevent CSApprox from kicking in...
+			exe "noa colorscheme" fnamemodify(g:distractfree_colorscheme, ':r')
 		endif
         " Set highlighting
-        for hi in ['VertSplit', 'NonText', 'SignColumn']
-            call <sid>ResetHi(hi)
-        endfor
+        " for hi in ['VertSplit', 'NonText', 'SignColumn']
+        "    call <sid>ResetHi(hi)
+        " endfor
     else
 		unlet! s:main_buffer
 		unlet! g:colors_name
@@ -436,6 +444,8 @@ fu! <sid>SaveRestore(save) " {{{2
 endfu
 
 fu! <sid>ResetHi(group) "{{{2
+	" not needed anymore
+	" Resets a:group to Normal highlighting group
 	if !exists("s:default_hi")
 		redir => s:default_hi | sil! hi Normal | redir END
 		let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
@@ -603,7 +613,9 @@ fu! <sid>ResetStl(reset) "{{{2
 			:AirlineToggle
 		endif
 		let s:_stl = &l:stl
-		let &l:stl='%#Normal#'
+		let cur_win = winnr()
+		windo let &l:stl='%#Normal#'
+		exe "noa" cur_win "wincmd w"
 	else
 		if exists("s:_stl") && !exists(":AirlineToggle")
 			let &l:stl=s:_stl
@@ -686,8 +698,10 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 				au QuitPre <buffer> :exe "noa sil! ". s:bwipe. "bw"
 			endif
 			au VimLeave * :call delete(s:sessionfile)
-			au InsertEnter <buffer> call <sid>ResetStl(1)
-			au InsertLeave <buffer> call <sid>ResetStl(0)
+			if get(g:, 'distractfree_enable_normalmode_stl',0)
+				au InsertEnter <buffer> call <sid>ResetStl(1)
+				au InsertLeave <buffer> call <sid>ResetStl(0)
+			endif
 		aug END
 		if get(g:, 'distractfree_enable_normalmode_stl',0)
 			call <sid>ResetStl(0)
@@ -706,7 +720,7 @@ fu! DistractFree#Active() "{{{2
 endfunction
 " vim: ts=4 sts=4 fdm=marker com+=l\:\"
 colors/darkroom.vim	[[[1
-38
+53
 " Vim WriteRoom/DarkRoom/OmniWrite like colorscheme
 " Maintainer:   Christian Brabandt <cb@256bit.org>
 " Last Change:  2012
@@ -716,29 +730,44 @@ hi clear
 if exists("syntax_on")
     syntax reset
 endif
-let g:colors_name="distractfree"
+let g:colors_name="darkroom"
 
-hi Statement    ctermfg=DarkCyan    ctermbg=Black	guifg=DarkCyan      guibg=Black
-hi Constant     ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
-hi Identifier   ctermfg=Green	    ctermbg=Black     	guifg=Green	    guibg=Black
-hi Type         ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
-hi String       ctermfg=Cyan	    ctermbg=Black     	guifg=Cyan	    guibg=Black
-hi Boolean      ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
-hi Number       ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan	    guibg=Black
-hi Special      ctermfg=DarkGreen   ctermbg=Black     	guifg=darkGreen     guibg=Black
-hi Scrollbar    ctermfg=DarkCyan    ctermbg=Black     	guifg=DarkCyan      guibg=Black
-hi Cursor       ctermfg=Black	    ctermbg=Green     	guifg=Black	    guibg=Green
-hi WarningMsg   ctermfg=Yellow	    ctermbg=Black	guifg=Yellow	    guibg=Black
-hi Directory    ctermfg=Green	    ctermbg=DarkBlue	guifg=Green	    guibg=DarkBlue
-hi Title        ctermfg=White	    ctermbg=DarkBlue	guifg=White	    guibg=DarkBlue 
-hi Cursorline   ctermfg=Black	    ctermbg=DarkGreen	guibg=darkGreen	    guifg=black
-hi Normal       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
-hi PreProc      ctermfg=DarkGreen   ctermbg=Black     	guifg=DarkGreen	    guibg=Black
-hi Comment      ctermfg=darkGreen   ctermbg=Black     	guifg=darkGreen	    guibg=Black
-hi LineNr       ctermfg=Green	    ctermbg=Black	guifg=Green	    guibg=Black
-hi ErrorMsg     ctermfg=Red	    ctermbg=Black     	guifg=Red	    guibg=Black
-hi Visual       ctermfg=White	    ctermbg=DarkGray	cterm=underline	    guifg=White		guibg=DarkGray	gui=underline
-hi Folded       ctermfg=DarkCyan    ctermbg=Black     	cterm=underline	    guifg=DarkCyan	guibg=Black	gui=underline
+let ctermbg=(get(g:, 'distractfree_transparent_cterm', 0) ? 'NONE' : 'Black')
+
+fu! <sid>Hi(group, properties)
+    exe ':hi' a:group a:properties
+endfu
+
+for group in ['Statement', 'Constant', 'Type', 'Boolean', 'Number', 'Scrollbar']
+    call <sid>Hi(group, 'ctermfg=DarkCyan ctermbg='.ctermbg.' guifg=DarkCyan guibg=Black')
+endfor
+
+for group in ['Special', 'PreProc', 'Comment']
+    call <sid>Hi(group, 'ctermfg=DarkGreen ctermbg='.ctermbg.' guifg=DarkGreen guibg=Black')
+endfor
+
+for group in ['Identifier', 'Normal', 'LineNr']
+    call <sid>Hi(group, 'ctermfg=Green ctermbg='.ctermbg.' guifg=Green guibg=Black')
+endfor
+
+call <sid>Hi('VertSplit', 'ctermfg=Green    ctermbg='.ctermbg.' guibg=Black guifg=NONE gui=NONE')
+call <sid>Hi('Cursorline', 'ctermfg=Black    ctermbg='.ctermbg.' guibg=DarkGreen guifg=Black')
+call <sid>Hi('Folded',     'ctermfg=DarkCyan ctermbg='.ctermbg.' cterm=underline guifg=DarkCyan guibg=Black gui=underline')
+call <sid>Hi('ErrorMsg',   'ctermfg=Red      ctermbg='.ctermbg.' guibg=Black guifg=Red')
+call <sid>Hi('WarningMsg', 'ctermfg=Yellow   ctermbg='.ctermbg.' guibg=Black guifg=Yellow')
+call <sid>Hi('String',     'ctermfg=Cyan     ctermbg='.ctermbg.' guibg=Black guifg=Cyan')
+call <sid>Hi('SignColumn', 'ctermfg=Yellow   ctermbg='.ctermbg.' guibg=Black guifg=Yellow')
+
+hi Directory    ctermfg=Green       ctermbg=DarkBlue    guifg=Green         guibg=DarkBlue
+hi Cursor       ctermfg=Black       ctermbg=Green       guifg=Black         guibg=Green
+hi Title        ctermfg=White       ctermbg=DarkBlue    guifg=White         guibg=DarkBlue 
+hi Visual       ctermfg=White       ctermbg=DarkGray    cterm=underline     guifg=White         guibg=DarkGray  gui=underline
+
+" link some highlight groups
+hi! link NonText Ignore
+
+" Make sure bg is still dark (might have been reset after setting the Normal group
+set background=dark
 
 " Reset by distract free
 " hi NonText      ctermfg=Black  ctermbg=Black guifg=black  guibg=Black
