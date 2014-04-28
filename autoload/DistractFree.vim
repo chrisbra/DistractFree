@@ -129,10 +129,6 @@ fu! <sid>SaveRestore(save) " {{{2
 			" prevent CSApprox from kicking in...
 			exe "noa colorscheme" fnamemodify(g:distractfree_colorscheme, ':r')
 		endif
-        " Set highlighting
-        " for hi in ['VertSplit', 'NonText', 'SignColumn']
-        "    call <sid>ResetHi(hi)
-        " endfor
     else
 		unlet! s:main_buffer
 		unlet! g:colors_name
@@ -158,24 +154,6 @@ fu! <sid>SaveRestore(save) " {{{2
 		endfor
     endif
 endfu
-
-fu! <sid>ResetHi(group) "{{{2
-	" not needed anymore
-	" Resets a:group to Normal highlighting group
-	if !exists("s:default_hi")
-		redir => s:default_hi | sil! hi Normal | redir END
-		let s:default_hi = substitute(s:default_hi, 'font=.*$', '', '')
-		let s:default_hi = substitute(s:default_hi, '.*xxx\s*\(.*$\)', '\1', '')
-		let s:default_hi = substitute(s:default_hi, '\w*fg=\S*', '', 'g')
-		let s:default_hi = substitute(s:default_hi, '\(\w*\)bg=\(\S*\)', '\0 \1fg=\2', 'g')
-	endif
-	if s:default_hi == 'cleared'
-		exe "sil syn clear" a:group
-	else
-		exe "sil hi" a:group s:default_hi
-	endif
-endfu
-
 fu! <sid>NewWindow(cmd) "{{{2
 	"call <sid>WarningMsg(printf("%s noa sil %s",(exists(":noswapfile") ? ':noswapfile': ''),a:cmd),0)
 	" needs some 7.4.1XX patch
