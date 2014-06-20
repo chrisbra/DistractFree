@@ -350,7 +350,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 				augroup END
 				augroup! DistractFreeMain
 			endif
-			if exists("g:distractfree_hook") && get(g:distractfree_hook, 'stop', 0) != 0
+			if exists("g:distractfree_hook") && has_key(g:distractfree_hook, 'stop') && !empty(g:distractfree_hook.stop)
 				exe g:distractfree_hook['stop']
 			endif
 			if exists("#airline")
@@ -401,7 +401,7 @@ fu! DistractFree#DistractFreeToggle() "{{{2
 			call <sid>ResetStl(0)
 		endif
 
-        if exists("g:distractfree_hook") && get(g:distractfree_hook, 'start', 0) != 0
+        if exists("g:distractfree_hook") && has_key(g:distractfree_hook, 'start') && !empty(g:distractfree_hook.start)
             exe g:distractfree_hook['start']
         endif
 		" exe "windo | if winnr() !=".winnr(). "|let &l:stl='%#Normal#'|endif"
