@@ -54,7 +54,8 @@ fu! <sid>Init() " {{{2
 				\ 'relativenumber': 0, 'linebreak': 1, 'wrap': 1, 'g:statusline': '%#Normal#',
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
 				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert: ', 'showtabline': 0,
-				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': '', 'lazyredraw': 1}
+				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': '', 'lazyredraw': 1,
+				\ 'breakindent': 1}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
@@ -142,6 +143,10 @@ fu! <sid>SaveRestore(save) " {{{2
 			let &guifont = s:guifont
 		endif
 		for [opt, val] in items(s:_opts)
+			" Check, that the option is actually supported
+			if !exists('+'.(opt =~ '^[glw]:' ? 'opt[2:]' : opt))
+				continue " option not supported, skip
+			endif
 			exe 'let &'.(opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. val.'"'
 			if (opt == 'g:statusline')
 				" Enable airline statusline
