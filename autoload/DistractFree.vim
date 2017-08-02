@@ -144,7 +144,7 @@ fu! <sid>SaveRestore(save) " {{{2
 		endif
 		for [opt, val] in items(s:_opts)
 			" Check, that the option is actually supported
-			if !exists('+'.(opt =~ '^[glw]:' ? 'opt[2:]' : opt))
+			if !exists('+'.(opt =~ '^[glw]:' ? opt[2:] : opt))
 				continue " option not supported, skip
 			endif
 			exe 'let &'.(opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. val.'"'
