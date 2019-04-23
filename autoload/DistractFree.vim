@@ -99,7 +99,7 @@ fu! <sid>SaveRestore(save) " {{{2
 		let s:main_buffer = bufnr('')
 		if exists("g:colors_name")
 			let s:colors = g:colors_name
-			let s:higroups = <sid>SaveHighlighting('User\|NonText')
+			let s:higroups = <sid>SaveHighlighting('User\|NonText\|EndOfBuffer\|VertSplit')
 		endif
 		if !empty(g:distractfree_font)
 			let s:guifont = &guifont
@@ -129,6 +129,13 @@ fu! <sid>SaveRestore(save) " {{{2
 		if exists("g:distractfree_colorscheme") && !empty(g:distractfree_colorscheme)
 			" prevent CSApprox from kicking in...
 			exe "noa colorscheme" fnamemodify(g:distractfree_colorscheme, ':r')
+        else
+            " Force Link some of the highlighting groups to the Ignore group,
+            " so they do not stand out too much
+            for item in s:higroups
+                let val=split(item)
+                exe "sil hi! link " val[1] "Ignore"
+            endfor
 		endif
     else
 		unlet! s:main_buffer
