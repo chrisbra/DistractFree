@@ -94,6 +94,18 @@ fu! <sid>LoadFile(cmd) " {{{2
 	endif
 endfu
 
+fu! <sid>SetHighlightGroups(groups) " {{{2
+    " Set some of the highlighting groups to a sane default
+    let normbg = synIDattr(synIDtrans(hlID('Normal')), 'bg#')
+    let gui = has('gui_running') || (exists('+termguicolors') && &termguicolors)
+    let sp = gui ? 'gui' : 'cterm'
+    let color = [ (normbg == -1 || normbg =='') ? 'black' : normbg,
+                \ (normbg == -1 || normbg =='') ? 'NONE' : normbg ]
+    for group in a:groups
+        exe printf("hi %s %s=%s %s=%s %s=%s", group, sp.'fg', color[0], sp.'bg', color[1], sp, 'NONE')
+    endfor
+endfu
+
 fu! <sid>SaveRestore(save) " {{{2
     if a:save
 		let s:main_buffer = bufnr('')
@@ -132,10 +144,7 @@ fu! <sid>SaveRestore(save) " {{{2
         else
             " Force Link some of the highlighting groups to the Ignore group,
             " so they do not stand out too much
-            for item in s:higroups
-                let val=split(item)
-                exe "sil hi! link " val[1] "Ignore"
-            endfor
+            call <sid>SetHighlightGroups(['User','NonText','EndOfBuffer','VertSplit'])
 		endif
     else
 		unlet! s:main_buffer
