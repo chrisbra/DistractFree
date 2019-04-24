@@ -55,7 +55,7 @@ fu! <sid>Init() " {{{2
 				\ 'l:statusline': '%#Normal#', 'cursorline': 0, 'cursorcolumn': 0,
 				\ 'ruler': 0, 'guioptions': '', 'fillchars':  'vert: ', 'showtabline': 0,
 				\ 'showbreak': '', 'foldenable': 0, 'tabline': '', 'guitablabel': '', 'lazyredraw': 1,
-				\ 'breakindent': 1}
+				\ 'breakindent': 1, 'colorcolumn': ''}
 
     " Given the desired column width, and minimum sidebar width, determine
     " the minimum window width necessary for splitting to make sense
@@ -135,6 +135,13 @@ fu! <sid>SaveRestore(save) " {{{2
 				else
 					exe 'let &'. (opt =~ '^[glw]:' ? '' : 'l:').opt. '="'. s:_def_opts[opt].'"'
 				endif
+                if (opt =~# 'column')
+                    " window local options, need to be reset in all other
+                    " windows, so iterate over all windows and reset it
+                    let winnr=winnr()
+                    exe "noa windo :noa :let &l:". opt. '="'.s:_def_opts[opt].'"'
+                    exe "noa ". winnr. "wincmd w"
+                endif
 			endif
 		endfor
 		" Try to load the specified colorscheme
